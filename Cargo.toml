@@ -1,0 +1,62 @@
+[package]
+name = "command-scheduler"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Local command scheduling daemon and CLI"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/alsvinicius/commandscheduler"
+homepage = "https://github.com/alsvinicius/commandscheduler"
+include = [
+    "/src/**",
+    "/migrations/**",
+    "/docs/engineering/api/openapi.yaml",
+    "/Cargo.lock",
+    "/LICENSE",
+    "/SECURITY.md",
+    "/THIRD_PARTY_NOTICES.md",
+    "/ui/public/third-party-notices.txt",
+    "/README.md",
+]
+
+[dependencies]
+anyhow = "1"
+axum = "0.8"
+base64 = "0.22"
+chrono = { version = "0.4", features = ["clock"] }
+clap = { version = "4", features = ["derive", "env"] }
+croner = { version = "4", features = ["chrono"] }
+directories = "6"
+fs2 = "0.4"
+libc = "0.2"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+sqlx-core = { version = "=0.8.6", default-features = false, features = ["migrate", "_rt-tokio"] }
+sqlx-sqlite = { version = "=0.8.6", default-features = false, features = ["bundled", "migrate"] }
+tokio = { version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "time"] }
+tower-http = { version = "0.6", features = ["fs"] }
+uuid = { version = "1", features = ["v4"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Security", "Win32_System_JobObjects", "Win32_System_Threading", "Win32_System_Diagnostics_ToolHelp"] }
+
+[dev-dependencies]
+chrono-tz = "0.10"
+tempfile = "3"
+tower = { version = "0.5", features = ["util"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[[bin]]
+name = "command-scheduler"
+path = "src/main.rs"
+
+[[bin]]
+name = "command-scheduler-cli"
+path = "src/bin/cli.rs"

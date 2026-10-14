@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+        with:
+          components: rustfmt, clippy
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: 3.12
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 11.11.0
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+      - name: Run Rust checks
+        run: cargo test --locked --bins
+      - name: Run Clippy
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - name: Build Rust binaries
+        run: cargo build --locked --bins
+      - name: Build web application
+        run: pnpm ui:build
+      - name: Install Chromium on Linux
+        if: runner.os == 'Linux'
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Install Chromium on macOS and Windows
+        if: runner.os != 'Linux'
+        run: pnpm exec playwright install chromium
+      - name: Run web journey BDD scenarios
+        run: pnpm bdd:web
+      - name: Run journey BDD scenarios
+        run: python -m unittest discover -s tests/bdd -v
+      - name: Measure scheduled punctuality
+        run: python scripts/measure_punctuality.py
+      - name: Validate Windows installer syntax
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'packaging/windows/install-service.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) { throw ($errors | Out-String) }
+      - name: Check journey BDD traceability
+        run: python tests/bdd/check_coverage.py
+      - name: Validate Windows continuous task settings
+        # Settings must survive registration with no default 72-hour limit.
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tests/windows/task-settings.ps1
+      - name: Lint OpenAPI
+        run: pnpm openapi:lint
+      - name: Check publication metadata
+        run: python scripts/check_publication.py

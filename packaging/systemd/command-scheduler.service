@@ -1,0 +1,17 @@
+[Unit]
+Description=Command Scheduler local daemon
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/command-scheduler
+Restart=on-failure
+RestartSec=5s
+Environment=COMMAND_SCHEDULER_ADDR=127.0.0.1:4371
+Environment=COMMAND_SCHEDULER_WEB_DIR=%h/.local/share/command-scheduler/ui
+WorkingDirectory=%h
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

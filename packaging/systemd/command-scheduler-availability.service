@@ -1,0 +1,16 @@
+[Unit]
+Description=Command Scheduler availability observer
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/.local/bin/command-scheduler-availability monitor --log %h/.local/state/command-scheduler/availability.jsonl
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=%h/.local/state/command-scheduler
+
+[Install]
+WantedBy=default.target

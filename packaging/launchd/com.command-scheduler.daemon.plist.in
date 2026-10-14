@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.command-scheduler.daemon</string>
+  <key>ProgramArguments</key>
+  <array><string>@INSTALL_DIR@/command-scheduler</string></array>
+  <key>WorkingDirectory</key><string>@INSTALL_DIR@</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>COMMAND_SCHEDULER_ADDR</key><string>127.0.0.1:4371</string>
+    <key>COMMAND_SCHEDULER_WEB_DIR</key><string>@INSTALL_DIR@/ui</string>
+  </dict>
+  <key>StandardOutPath</key><string>@HOME_DIR@/Library/Logs/command-scheduler.log</string>
+  <key>StandardErrorPath</key><string>@HOME_DIR@/Library/Logs/command-scheduler.log</string>
+</dict>
+</plist>

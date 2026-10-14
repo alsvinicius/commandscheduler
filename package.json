@@ -1,0 +1,25 @@
+{
+  "name": "command-scheduler",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alsvinicius/commandscheduler.git"
+  },
+  "version": "0.1.0",
+  "packageManager": "pnpm@11.11.0",
+  "scripts": {
+    "openapi:lint": "redocly lint docs/engineering/api/openapi.yaml --extends=minimal",
+    "ui:dev": "pnpm --filter @command-scheduler/ui dev",
+    "ui:build": "pnpm --filter @command-scheduler/ui build",
+    "ui:preview": "pnpm --filter @command-scheduler/ui preview",
+    "bdd:web": "playwright test",
+    "build": "pnpm ui:build && cargo build --bins",
+    "dev:daemon": "cargo run --bin command-scheduler",
+    "dev:cli": "cargo run --bin command-scheduler-cli --"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@redocly/cli": "^2.62.1"
+  }
+}

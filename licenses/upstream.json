@@ -1,0 +1,52 @@
+{
+  "npm:@ai-sdk/provider-utils@4.0.33": {
+    "path": "licenses/upstream/npm-ai-sdk-provider-utils4.0.33.txt",
+    "sha256": "b4f9adb7c568904834d0dd6cc98d16c390d21ca32fc17ae7a267715269bd5529",
+    "source": "https://raw.githubusercontent.com/vercel/ai/a2d8be2aa0c024f1e3d275d94b67cc17c9159043/LICENSE"
+  },
+  "npm:@headlessui/vue@1.7.23": {
+    "path": "licenses/upstream/npm-headlessui-vue1.7.23.txt",
+    "sha256": "c0812e5b3b5848765343baffe9e304233fceae7891ba414a10d679aa7eccc0a6",
+    "source": "https://raw.githubusercontent.com/tailwindlabs/headlessui/2a46945675c4b52d7b73e1ed612cf70605e2b576/LICENSE"
+  },
+  "npm:@replit/codemirror-css-color-picker@6.3.0": {
+    "path": "licenses/upstream/npm-replit-codemirror-css-color-picker6.3.0.txt",
+    "sha256": "fa157cf7151e4536e5516c4f8e6dc8a991faab4e6007b55f9aafa72f6ef425d2",
+    "source": "https://raw.githubusercontent.com/replit/Codemirror-CSS-color-picker/2eb228cdf8140b0bb586f5c561cf5347d05d4cc6/package.json"
+  },
+  "npm:@scalar/api-reference@1.74.0": {
+    "path": "licenses/upstream/npm-scalar-api-reference1.74.0.txt",
+    "sha256": "380cd0a6ad700e1f821f2a509f0dd9ff835041cee2d43daf5dedc1adb2bcc620",
+    "source": "https://raw.githubusercontent.com/scalar/scalar/b9456bb23f08e86dc71126fcccfba59154e9adf0/LICENSE"
+  },
+  "npm:@scalar/openapi-types@0.9.8": {
+    "path": "licenses/upstream/npm-scalar-openapi-types0.9.8.txt",
+    "sha256": "380cd0a6ad700e1f821f2a509f0dd9ff835041cee2d43daf5dedc1adb2bcc620",
+    "source": "https://raw.githubusercontent.com/scalar/scalar/b9456bb23f08e86dc71126fcccfba59154e9adf0/LICENSE"
+  },
+  "npm:@scalar/schemas@0.13.2": {
+    "path": "licenses/upstream/npm-scalar-schemas0.13.2.txt",
+    "sha256": "380cd0a6ad700e1f821f2a509f0dd9ff835041cee2d43daf5dedc1adb2bcc620",
+    "source": "https://raw.githubusercontent.com/scalar/scalar/b9456bb23f08e86dc71126fcccfba59154e9adf0/LICENSE"
+  },
+  "npm:@scalar/workspace-store@0.68.3": {
+    "path": "licenses/upstream/npm-scalar-workspace-store0.68.3.txt",
+    "sha256": "380cd0a6ad700e1f821f2a509f0dd9ff835041cee2d43daf5dedc1adb2bcc620",
+    "source": "https://raw.githubusercontent.com/scalar/scalar/b9456bb23f08e86dc71126fcccfba59154e9adf0/LICENSE"
+  },
+  "rust:crc-catalog@2.5.0": {
+    "path": "licenses/upstream/rust-crc-catalog2.5.0.txt",
+    "sha256": "5ef8fcfb6cccec8fcae043c834099a60c8b7406408db576e026d2b7e67dc5cf5",
+    "source": "https://raw.githubusercontent.com/akhilles/crc-catalog/ed4ad631f22b05055c21a3a4127eb7cf6d75bb62/LICENSES/MIT.txt"
+  },
+  "rust:winapi-i686-pc-windows-gnu@0.4.0": {
+    "path": "licenses/upstream/rust-winapi-i686-pc-windows-gnu0.4.0.txt",
+    "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b",
+    "source": "https://raw.githubusercontent.com/retep998/winapi-rs/796a8e6c2971dc2ff1bcff166e6671284f9b5b6b/LICENSE-MIT"
+  },
+  "rust:winapi-x86_64-pc-windows-gnu@0.4.0": {
+    "path": "licenses/upstream/rust-winapi-x86_64-pc-windows-gnu0.4.0.txt",
+    "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b",
+    "source": "https://raw.githubusercontent.com/retep998/winapi-rs/796a8e6c2971dc2ff1bcff166e6671284f9b5b6b/LICENSE-MIT"
+  }
+}

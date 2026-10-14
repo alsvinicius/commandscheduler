@@ -1,0 +1,7 @@
+packages:
+  - ui
+allowBuilds:
+  vue-demi: true
+overrides:
+  # GHSA-866g-f22w-33x8: Scalar's AI dependencies pin an affected version.
+  '@ai-sdk/provider-utils@>=4.0.0 <4.0.33': '4.0.33'
