@@ -260,7 +260,7 @@ onUnmounted(() => { if (refreshTimer) window.clearInterval(refreshTimer) })
 
 <template>
   <ApiReference v-if="isApiReference" :configuration="apiConfiguration" />
-  <main v-else class="app-shell">
+  <main v-else class="app-shell instrument-design" data-theme="workshop">
     <header class="topbar">
       <a class="brand" href="/" aria-label="Command Scheduler, início"><span class="brand-mark" aria-hidden="true">↗</span><span>command<span class="brand-light">scheduler</span></span></a>
       <nav aria-label="Navegação principal"><a href="#schedules">Schedules</a><a href="/docs/api">API reference</a><span class="daemon" :class="{'daemon-offline':!daemonHealthy}"><i aria-hidden="true"></i>{{ daemonHealthy ? 'Daemon local' : 'Daemon indisponível' }}</span></nav>
