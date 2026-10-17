@@ -6,7 +6,7 @@ A CLI é outro cliente da API. Ela não possui uma camada separada de regras ou 
 
 SQLite preserva schedules e ocorrências entre reinícios. Quando o daemon reinicia, horários vencidos são avaliados conforme `missedPolicy` do schedule. Uma execução que estava ativa quando o daemon parou fica interrompida e requer confirmação para nova tentativa. O daemon adquire um lock exclusivo associado ao banco antes dessa recuperação. A política `sequence` mantém a ordem e executa uma ocorrência do schedule por vez. Cancelar um schedule impede retries automáticos pendentes e futuros.
 
-O limite local permite funcionamento sem serviço hospedado, mas significa que schedules dependem de a máquina e o daemon estarem ativos. A API aceita somente loopback e não inclui autenticação no MVP. Chamadas de páginas web são restringidas à origem local da interface.
+O limite local permite funcionamento sem serviço hospedado, mas significa que schedules dependem de a máquina e o daemon estarem ativos. A API escuta somente em loopback e não inclui autenticação própria. No Workspace, um proxy vincula portas de projetos à interface Tailscale; a API aceita autoridades IPv4 do tailnet (`100.64.0.0/10`) apenas para esse acesso encaminhado. Chamadas de páginas web continuam restritas à mesma origem.
 
 O contrato de comunicação está descrito em [OpenAPI 3.1](../../engineering/api/openapi.yaml); os detalhes de configuração ficam na [referência do daemon](../reference/configuration.md).
 

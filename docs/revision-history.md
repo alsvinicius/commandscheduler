@@ -591,6 +591,8 @@ Registro central de alterações dos artefatos. Cada seção usa o caminho do do
 
 ## `product/workflow-state.md`
 
+- r71 — 2026-10-16: confirma o repositório GitHub público, registra a restauração do vínculo Git e atualiza o estado da publicação.
+
 - r70 — 2026-10-13: registra nova auditoria open source, correções de dependências/transação/pacote, avisos de terceiros, CI de segurança e metadados do repositório previsto.
 
 - r69 — 2026-10-13: registra a validação dos 14 comentários de revisão, sete falhas remanescentes corrigidas, novas reproduções e evidências Linux; preserva gates nativos e CI remota pendentes.

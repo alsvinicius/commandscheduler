@@ -55,14 +55,21 @@ def render():
         if authors:
             header += "Authors (package metadata): " + "; ".join(authors) + "\n"
         files = license_files(directory)
-        texts = [f"\n--- {p.name} ---\n{p.read_text(encoding='utf-8')}" for p in files]
+        texts = [
+            f"\n--- {p.name} ---\n" + "\n".join(
+                line.rstrip() for line in p.read_text(encoding="utf-8").splitlines()
+            )
+            for p in files
+        ]
         if key in sources:
             item = sources[key]
             header += f"Additional license source: {item['source']}\n"
             source = ROOT / item["path"]
             if hashlib.sha256(source.read_bytes()).hexdigest() != item["sha256"]:
                 raise RuntimeError(f"Cached upstream license checksum mismatch: {key}")
-            texts.append(source.read_text(encoding="utf-8"))
+            texts.append("\n".join(
+                line.rstrip() for line in source.read_text(encoding="utf-8").splitlines()
+            ))
         if not texts:
             raise RuntimeError(f"No license/notice text available: {key}")
         sections.append(header + "\n".join(texts).rstrip() + "\n")

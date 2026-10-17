@@ -6,7 +6,7 @@ O daemon aceita as seguintes variáveis de ambiente:
 
 | Variável | Padrão | Efeito |
 |---|---|---|
-| `COMMAND_SCHEDULER_ADDR` | `127.0.0.1:4371` | Endereço de escuta. Deve ser loopback. |
+| `COMMAND_SCHEDULER_ADDR` | `127.0.0.1:4371` | Endereço de escuta do daemon. Deve ser loopback. |
 | `COMMAND_SCHEDULER_WEB_DIR` | diretório `ui/dist` empacotado | Diretório de assets da interface. |
 | `COMMAND_SCHEDULER_DB_PATH` | diretório de dados local do usuário | Caminho para o arquivo SQLite. |
 
@@ -14,7 +14,7 @@ O diretório de dados padrão é escolhido pela biblioteca `ProjectDirs` para o 
 
 Cada banco pode ser usado por um único daemon, independentemente da porta. O daemon mantém um lock no arquivo `<caminho-canônico-do-banco>.lock` antes de aplicar migrações ou recuperar execuções interrompidas. Caminhos simbólicos para o mesmo banco compartilham esse lock. Uma segunda inicialização falha sem alterar ocorrências do daemon ativo.
 
-A API v1 usa o prefixo `/api/v1`. O daemon serve a referência navegável em `/docs/api` e a especificação em `/openapi.yaml`. A escuta é restrita a endereços de loopback. Clientes locais nativos não usam autenticação; `Host` deve ser `localhost` ou um endereço numérico de loopback. Chamadas originadas em páginas web exigem origem HTTP com o mesmo host e porta.
+A API v1 usa o prefixo `/api/v1`. O daemon serve a referência navegável em `/docs/api` e a especificação em `/openapi.yaml`. A escuta é restrita a endereços de loopback. O proxy do Workspace pode encaminhar a porta de um projeto pela interface Tailscale; nesse caso, `Host` também pode conter um IP Tailscale IPv4 (`100.64.0.0/10`). Chamadas originadas em páginas web exigem origem HTTP com a mesma autoridade. A API não inclui autenticação própria; a política de acesso do tailnet controla o acesso remoto.
 
 `make up` configura endereço `127.0.0.1:4372`, define um banco em `.tmp/dev/` e aponta a UI de desenvolvimento para esse daemon. O `make down` encerra apenas os processos lançados por esse comando.
 

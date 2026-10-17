@@ -4,7 +4,7 @@ Use a API local para criar schedules a partir de outra aplicação e depois cons
 
 ## Criar um schedule
 
-Envie `POST /api/v1/schedules` com `program`, `args`, `timing` e `missedPolicy`. O daemon só aceita clientes locais. O `Host` deve ser `localhost` ou um endereço numérico de loopback, como `127.0.0.1` ou `::1`, inclusive em clientes nativos. Domínios arbitrários são rejeitados, mesmo quando resolvem para loopback. Chamadas de navegador devem usar origem HTTP com o mesmo host e porta do `Host`; isso inclui o proxy Vite local em desenvolvimento.
+Envie `POST /api/v1/schedules` com `program`, `args`, `timing` e `missedPolicy`. O daemon continua escutando em loopback. Para acesso por outro dispositivo do tailnet, o proxy local do Workspace encaminha a porta do projeto pela interface Tailscale; nesse caso, o `Host` pode ser `localhost`, um endereço numérico de loopback ou um IP Tailscale IPv4 (`100.64.0.0/10`). Domínios arbitrários continuam rejeitados. Chamadas de navegador devem usar origem HTTP com a mesma autoridade do `Host`; isso inclui o proxy Vite local em desenvolvimento.
 
 ```sh
 curl --fail-with-body --silent --show-error \
@@ -42,7 +42,7 @@ A resposta contém o identificador da ocorrência. Consulte `GET /api/v1/occurre
 
 Erros seguem Problem Details e incluem um campo estável `code`. Use o status HTTP para a classe da resposta e `code` para lógica específica; não dependa do texto em `detail`.
 
-Para todas as operações, limites de paginação, esquemas e erros possíveis, consulte o [contrato OpenAPI](../../engineering/api/openapi.yaml). O serviço não é uma API remota: endereço não-loopback é rejeitado e autenticação não faz parte do MVP local.
+Para todas as operações, limites de paginação, esquemas e erros possíveis, consulte o [contrato OpenAPI](../../engineering/api/openapi.yaml). O daemon não escuta em uma interface de rede; o acesso remoto depende do proxy Tailscale do Workspace e das regras de acesso do tailnet. A API não inclui autenticação própria.
 
 ## Consultar cockpit, agenda e histórico global
 

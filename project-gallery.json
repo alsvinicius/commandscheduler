@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "project": { "name": "Command Scheduler", "familyName": "command-scheduler", "source": "https://github.com/alsvinicius/commandscheduler", "path": "." },
+  "services": [
+    { "id": "api", "name": "API", "portEnv": "COMMAND_SCHEDULER_API_PORT", "healthPath": "/health" },
+    { "id": "web", "name": "Interface Web", "portEnv": "COMMAND_SCHEDULER_WEB_PORT", "interfaceUrl": "http://127.0.0.1:5173" }
+  ]
+}

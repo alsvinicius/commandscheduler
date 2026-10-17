@@ -128,7 +128,12 @@ fn trusted_local_authority(value: &str) -> bool {
             host.eq_ignore_ascii_case("localhost")
                 || host
                     .parse::<std::net::IpAddr>()
-                    .is_ok_and(|ip| ip.is_loopback())
+                    .is_ok_and(|ip| {
+                        ip.is_loopback()
+                            || matches!(ip, std::net::IpAddr::V4(address)
+                                if u32::from(address) >= u32::from(std::net::Ipv4Addr::new(100, 64, 0, 0))
+                                    && u32::from(address) <= u32::from(std::net::Ipv4Addr::new(100, 127, 255, 255)))
+                    })
         })
 }
 
@@ -1703,6 +1708,37 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn api_accepts_matching_tailscale_origin_for_workspace_proxy() {
+        let (_directory, app, _pool) = test_router().await;
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/schedules")
+                    .header(header::HOST, "100.94.53.63:30014")
+                    .header(header::ORIGIN, "http://100.94.53.63:30014")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/schedules")
+                    .header(header::HOST, "192.168.1.20:30014")
+                    .header(header::ORIGIN, "http://192.168.1.20:30014")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
     }
 
     #[tokio::test]

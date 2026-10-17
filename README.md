@@ -1,12 +1,14 @@
 # Command Scheduler
 
+Para iniciar o frontend Vite e o daemon Axum juntos pela Project Gallery, use `make start`/`make stop`. `COMMAND_SCHEDULER_API_PORT` e `COMMAND_SCHEDULER_WEB_PORT` recebem as portas atribuídas; o frontend encaminha `/api` e `/health` ao daemon.
+
 Documentação: consulte [`docs/README.md`](docs/README.md). Com o daemon ativo, a referência navegável da API fica em `http://127.0.0.1:4371/docs/api` e o OpenAPI em `/openapi.yaml`.
 
 Plataforma local para criar e gerenciar schedules e execuções pela CLI, web/API e permitir que aplicações locais criem e parametrizem execuções.
 
 Licenciado sob a [licença MIT](LICENSE).
 
-**MVP em desenvolvimento.** Repositório previsto: [alsvinicius/commandscheduler](https://github.com/alsvinicius/commandscheduler).
+**MVP em desenvolvimento.** O código está publicado em [alsvinicius/commandscheduler](https://github.com/alsvinicius/commandscheduler).
 Veja a [política de segurança](SECURITY.md), os [avisos de terceiros](THIRD_PARTY_NOTICES.md) e o [procedimento de publicação](docs/diataxis/how-to/publish-open-source.md).
 
 **Status:** CLI, daemon Rust, API local, UI Vue e persistência SQLite estão implementados e validados em Linux. Os 100 cenários BDD estão ligados a verificações executáveis; o medidor de pontualidade ociosa roda fora da CI, e seu resultado, a observação mensal e a reprodução nativa de macOS/Windows permanecem gates de release. A CI está configurada para Linux, macOS e Windows.

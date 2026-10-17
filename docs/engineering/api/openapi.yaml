@@ -4,10 +4,12 @@ info:
   version: 1.1.0
   description: >-
     API REST/JSON local para cadastrar e controlar schedules de comandos e suas
-    ocorrências. O daemon deve escutar somente em loopback; clientes locais não
-    usam autenticação. Host deve ser localhost ou um IP numérico de loopback.
-    Chamadas de navegador exigem origem HTTP com o mesmo host e porta do Host;
-    destinos arbitrários retornam 403, mesmo quando resolvem para loopback.
+    ocorrências. O daemon deve escutar somente em loopback; a API não inclui
+    autenticação própria. Host deve ser localhost ou um IP numérico de loopback.
+    Para portas encaminhadas pelo proxy do Workspace na interface Tailscale,
+    Host também pode ser um IPv4 do intervalo 100.64.0.0/10. Chamadas de
+    navegador exigem origem HTTP com a mesma autoridade do Host; destinos
+    arbitrários retornam 403, mesmo quando resolvem para loopback.
 security: []
 servers:
   - url: http://127.0.0.1:4371/api/v1

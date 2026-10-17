@@ -36,7 +36,7 @@ Criar um schedule faz o daemon executar um processo local com as permissões do 
 1. Verifique se o daemon já responde em loopback. O endereço padrão é `http://127.0.0.1:4371`; um ambiente `make up` usa `http://127.0.0.1:4372` e banco de desenvolvimento em `.tmp/dev/`.
 2. Se o endereço do daemon foi fornecido pelo usuário ou pela configuração do ambiente, use-o. Para a CLI, `--server URL` e `COMMAND_SCHEDULER_URL` selecionam a URL base.
 3. Se não houver daemon ativo, não assuma que o banco de desenvolvimento é o destino pretendido. Informe que o serviço local está indisponível. Para experimentos explicitamente de desenvolvimento, o guia Diátaxis documenta `make up` e `make down` no Linux.
-4. A API só escuta em loopback. `Host` deve ser `localhost` ou um endereço numérico de loopback, mesmo para clientes nativos. Clientes nativos usam HTTP local sem cabeçalho `Origin`; clientes web exigem origem HTTP com o mesmo host e porta, inclusive no proxy local de desenvolvimento. Não falsifique `Origin` para contornar a proteção.
+4. A API escuta em loopback. `Host` deve ser `localhost`, um endereço numérico de loopback ou um IP Tailscale IPv4 (`100.64.0.0/10`) quando a porta do projeto for encaminhada pelo proxy do Workspace. Clientes web exigem origem HTTP com a mesma autoridade, inclusive no proxy Vite local. Não falsifique `Origin` para contornar a proteção.
 5. Use o prefixo `/api/v1` nas rotas. Para o endereço padrão, a base é `http://127.0.0.1:4371/api/v1`. Consulte OpenAPI em `/openapi.yaml` ou a referência navegável em `/docs/api`.
 
 ## Criar e administrar schedules

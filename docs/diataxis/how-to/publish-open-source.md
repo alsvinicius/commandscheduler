@@ -27,13 +27,16 @@ exceções. Mudanças de dependências exigem regenerar os avisos de terceiros
 antes de compilar a UI. `check_publication.py` confere também links locais e
 que todas as migrações SQL estão embutidas no daemon.
 
-## Criar e revisar o repositório
+## Revisar e atualizar o repositório
 
-Crie o repositório no GitHub, habilite **Settings → Security → Private
-vulnerability reporting** e envie apenas os arquivos revisados. Antes do push,
-revise a lista de arquivos preparados pelo Git e faça a varredura local com
-Gitleaks. A varredura do diretório atual não comprova a limpeza de um histórico
-Git antigo.
+Confirme que `origin` aponta para
+`https://github.com/alsvinicius/commandscheduler.git` e que a branch de trabalho
+acompanha `origin/main`. Habilite **Settings → Security → Private vulnerability
+reporting**. Antes de cada push, revise `git status` e `git diff --cached`,
+confirme que arquivos locais de dados, segredos, logs e builds não foram
+adicionados, e faça a varredura Gitleaks do histórico completo. Não reescreva
+histórico publicado sem um plano explícito de remediação; uma varredura do
+diretório de trabalho não comprova a limpeza de commits anteriores.
 
 Os workflows `CI` e `Security` rodam após o push. `Security` varre o histórico
 Git completo e consulta as bases atuais de vulnerabilidades; também repete
