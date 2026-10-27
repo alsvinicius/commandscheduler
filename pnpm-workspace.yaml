@@ -5,3 +5,5 @@ allowBuilds:
 overrides:
   # GHSA-866g-f22w-33x8: Scalar's AI dependencies pin an affected version.
   '@ai-sdk/provider-utils@>=4.0.0 <4.0.33': '4.0.33'
+  # GHSA-xjj6-f33q-929c, GHSA-9fm3-97px-rjf6, GHSA-55wc-3pg8-jfw6: fix Scalar's undici dependency.
+  undici: 7.30.1

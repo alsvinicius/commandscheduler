@@ -8817,7 +8817,7 @@ SOFTWARE.
 
 
 ========================================================================
-npm:undici@7.29.1
+npm:undici@7.30.1
 License: MIT
 Upstream: https://undici.nodejs.org
 
@@ -35886,7 +35886,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 ========================================================================
-rust:rustls-webpki@0.103.15
+rust:rustls-webpki@0.103.16
 License: ISC
 Upstream: https://github.com/rustls/webpki
 
@@ -35913,7 +35913,7 @@ third-party/chromium/LICENSE.
 
 
 ========================================================================
-rust:rustls@0.23.45
+rust:rustls@0.23.46
 License: Apache-2.0 OR ISC OR MIT
 Upstream: https://github.com/rustls/rustls
 
@@ -42115,7 +42115,7 @@ SOFTWARE.
 
 
 ========================================================================
-rust:tokio@1.53.2
+rust:tokio@1.53.3
 License: MIT
 Upstream: https://github.com/tokio-rs/tokio
 Authors (package metadata): Tokio Contributors <team@tokio.rs>
@@ -46728,7 +46728,7 @@ SOFTWARE.
 
 
 ========================================================================
-rust:webpki-roots@1.0.9
+rust:webpki-roots@1.0.10
 License: CDLA-Permissive-2.0
 Upstream: https://github.com/rustls/webpki-roots
 
