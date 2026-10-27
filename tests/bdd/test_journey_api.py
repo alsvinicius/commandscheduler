@@ -34,7 +34,10 @@ def timestamp_after(seconds: float) -> str:
 
 class LocalDaemon(unittest.TestCase):
     def setUp(self) -> None:
-        self.temp = tempfile.TemporaryDirectory(prefix="command-scheduler-bdd-")
+        # Windows can keep a SQLite file handle briefly after the daemon exits.
+        self.temp = tempfile.TemporaryDirectory(
+            prefix="command-scheduler-bdd-", ignore_cleanup_errors=os.name == "nt"
+        )
         self.port = free_port()
         self.base = f"http://127.0.0.1:{self.port}"
         self.db = Path(self.temp.name) / "bdd.sqlite3"
