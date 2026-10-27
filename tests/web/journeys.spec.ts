@@ -236,7 +236,7 @@ test('rejects a complete command line pasted into the executable field', async (
 })
 
 // Covers: BDD-JRN-016-01 BDD-JRN-016-02 BDD-JRN-016-03 BDD-JRN-016-06
-test('shows cockpit metrics and switches the agenda calendar range', async ({ page }) => {
+test('shows cockpit metrics and upcoming scheduled runs', async ({ page }) => {
   await page.goto(baseUrl)
   await expect(page).toHaveTitle('commandscheduler')
   await expect(page.getByText('Daemon local', { exact: true })).toBeVisible()
@@ -265,8 +265,7 @@ test('shows cockpit metrics and switches the agenda calendar range', async ({ pa
   execFileSync(python,['-c',insertOutcomes,path.join(tempDir,'web.sqlite3'),scheduleId!])
   await page.getByRole('button',{name:'Atualizar ↻'}).click()
   await expect(page.locator('.metric-grid article').nth(1).locator('strong')).toHaveText('1')
-  await expect(page.locator('.agenda-list')).toContainText('Concluído')
-  await expect(page.locator('.agenda-list')).toContainText('Falhou')
+  await expect(page.locator('.agenda-list')).toContainText('agenda-target')
   await expect(page.locator('.metric-grid article').nth(4).locator('strong')).toHaveText('1')
   await expect(page.locator('.metric-grid article').nth(5).locator('strong')).toHaveText('1')
   for(const days of ['1','7','30','90']) { await page.getByLabel('Indicadores').selectOption(days); await expect(page.locator('.metric-grid article').nth(4).locator('strong')).toHaveText('1') }
