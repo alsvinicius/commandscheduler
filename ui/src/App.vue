@@ -9,7 +9,7 @@ type Schedule = {
   retryPolicy: { maxRetries: number; delaysSeconds: number[] }; createdAt: string; updatedAt: string
 }
 type Occurrence = {
-  id: string; scheduleId: string; status: string; source: string; attempt: number
+  id: string; scheduleId: string; scheduleName?: string | null; scheduleProgram?: string | null; status: string; source: string; attempt: number
   createdAt: string; scheduledFor?: string | null; startedAt?: string | null; finishedAt?: string | null
   exitCode?: number | null; stdout?: string; stderr?: string; stdoutTruncated: boolean; stderrTruncated: boolean
   missedOccurrences?: { count: number; from: string; through: string }; retryOf?: string | null
@@ -26,14 +26,15 @@ const ApiReference = defineAsyncComponent(async () => {
   ])
   return component
 })
-const isApiReference = window.location.pathname.startsWith('/docs/api')
+const route = window.location.pathname.replace(/\/$/, '') || '/'
+const isHome = route === '/'
+const isSchedules = route === '/schedules'
+const isRuns = route === '/runs'
+const isApiReference = route.startsWith('/docs/api')
 const apiConfiguration = { url: '/openapi.yaml', theme: 'default' as const, layout: 'modern' as const, hideDarkModeToggle: true }
 
 const schedules = ref<Schedule[]>([])
 const scheduleCursor = ref<string | null>(null)
-const occurrences = ref<Occurrence[]>([])
-const occurrenceCursor = ref<string | null>(null)
-const occurrenceFilter = ref('all')
 const overview = ref<Overview | null>(null)
 const agenda = ref<AgendaItem[]>([])
 const globalRuns = ref<Occurrence[]>([])
@@ -44,7 +45,6 @@ const scheduleFilter = ref('all')
 const runFilter = ref('all')
 const historyDays = ref(30)
 const historyScheduleId = ref('')
-const agendaPeriod = ref<'day' | 'week' | 'month'>('week')
 const selectedId = ref<string | null>(null)
 const loading = ref(false)
 const daemonHealthy = ref(false)
@@ -61,7 +61,6 @@ const editDraft = ref({ name: '', program: '', args: '[]', timingType: 'cron' as
 const recurrence = ref({ preset: 'weekly', interval: 5, hour: '09:00', dayOfMonth: 1, weekdays: [1,2,3,4,5] as number[] })
 let refreshTimer: number | undefined
 let historyRequestId = 0
-let occurrenceRequestId = 0
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`/api/v1${path}`, { ...init, headers: { ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...init.headers } })
@@ -75,13 +74,14 @@ async function refresh(reset = true) {
   try {
     const health = await fetch('/health'); daemonHealthy.value = health.ok && (await health.text()) === 'ok'
     if (!daemonHealthy.value) throw new Error('Daemon local indisponível.')
-    if (reset) { schedules.value = []; scheduleCursor.value = null }
-    const params = new URLSearchParams({limit:'100'}); if (scheduleCursor.value) params.set('cursor',scheduleCursor.value); if (scheduleFilter.value !== 'all') params.set('status',scheduleFilter.value)
-    const page = await request<Page<Schedule>>(`/schedules?${params}`)
-    schedules.value.push(...page.items); scheduleCursor.value = page.nextCursor ?? null
-    if (reset && selectedId.value && !page.items.some(item => item.id === selectedId.value)) selectedId.value = null
-    if (selectedId.value) await loadOccurrences(selectedId.value)
-    await Promise.all([loadOverview(), loadAgenda()])
+    if (isSchedules) {
+      if (reset) { schedules.value = []; scheduleCursor.value = null }
+      const params = new URLSearchParams({limit:'100'}); if (scheduleCursor.value) params.set('cursor',scheduleCursor.value); if (scheduleFilter.value !== 'all') params.set('status',scheduleFilter.value)
+      const page = await request<Page<Schedule>>(`/schedules?${params}`)
+      schedules.value.push(...page.items); scheduleCursor.value = page.nextCursor ?? null
+      if (reset && selectedId.value && !page.items.some(item => item.id === selectedId.value)) selectedId.value = null
+    }
+    if (isHome) await Promise.all([loadOverview(), loadAgenda()])
   } catch (cause) {
     if (!daemonHealthy.value) { overview.value = null; agenda.value = []; if (reset) schedules.value = [] }
     error.value = cause instanceof Error ? cause.message : 'Não foi possível consultar o daemon.'
@@ -91,32 +91,22 @@ async function loadMoreSchedules() { await refresh(false) }
 
 function intervalBounds(days: number) { const end = new Date(); const start = new Date(end); if (days === 1) start.setHours(0,0,0,0); else { start.setDate(start.getDate()-days+1); start.setHours(0,0,0,0) } return { from: start.toISOString(), to: end.toISOString() } }
 async function loadOverview() { const range = intervalBounds(periodDays.value); overview.value = await request<Overview>(`/overview?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`) }
-function agendaBounds() { const start = new Date(); start.setHours(0,0,0,0); const end = new Date(start); if (agendaPeriod.value === 'day') end.setDate(end.getDate()+1); else if (agendaPeriod.value === 'week') { start.setDate(start.getDate()-((start.getDay()+6)%7)); end.setTime(start.getTime()); end.setDate(end.getDate()+7) } else { start.setDate(1); end.setMonth(end.getMonth()+1); end.setDate(1) } return { from: start.toISOString(), to: end.toISOString() } }
-async function loadAgenda() { const range = agendaBounds(); agenda.value = (await request<{items: AgendaItem[]}>(`/agenda?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`)).items }
+function agendaBounds() { const now = Date.now(); return { from: new Date(now).toISOString(), to: new Date(now + 24 * 60 * 60 * 1000).toISOString() } }
+async function loadAgenda() { const range = agendaBounds(); agenda.value = (await request<{items: AgendaItem[]}>(`/agenda?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`)).items.filter(item => item.status === 'running' || (new Date(item.at).getTime() >= Date.parse(range.from) && new Date(item.at).getTime() < Date.parse(range.to))) }
 async function loadGlobalRuns(reset = false) { if (reset) { historyRequestId++; globalRuns.value=[]; historyCursor.value=null }; const requestId=historyRequestId; const params = new URLSearchParams({limit:'50'}); if (historyCursor.value) params.set('cursor',historyCursor.value); if (runFilter.value !== 'all') params.set('status',runFilter.value); if(historyScheduleId.value.trim()) params.set('scheduleId',historyScheduleId.value.trim()); const historyFrom=new Date(); historyFrom.setDate(historyFrom.getDate()-historyDays.value+1); historyFrom.setHours(0,0,0,0); params.set('from',historyFrom.toISOString()); params.set('to',new Date().toISOString()); try { const page=await request<Page<Occurrence>>(`/occurrences?${params}`); if(requestId!==historyRequestId)return; globalRuns.value.push(...page.items); historyCursor.value=page.nextCursor ?? null } catch(cause) { if(requestId===historyRequestId)error.value=cause instanceof Error?cause.message:'Falha ao consultar o histórico.' } }
 async function loadGlobalOutput(item:Occurrence) { if (globalOutputs.value[item.id]) { delete globalOutputs.value[item.id]; return }; try { globalOutputs.value[item.id]=await request<Occurrence>(`/occurrences/${item.id}`) } catch(cause) { error.value=cause instanceof Error?cause.message:'Não foi possível carregar a saída.' } }
 async function updateDashboard() { try { await Promise.all([loadOverview(),loadAgenda()]) } catch (cause) { error.value=cause instanceof Error?cause.message:'Não foi possível atualizar o cockpit.' } }
-async function openAgendaSchedule(id:string) { try { scheduleFilter.value='all'; await refresh(); let schedule=schedules.value.find(item=>item.id===id); if(!schedule) { schedule=await request<Schedule>(`/schedules/${id}`); schedules.value.unshift(schedule) }; selectedId.value=id; prepareScheduleDraft(schedule); await loadOccurrences(id); document.querySelector('#schedules')?.scrollIntoView({behavior:'smooth'}) } catch(cause) { error.value=cause instanceof Error?cause.message:'Não foi possível abrir o schedule.' } }
-async function refreshLive() { try { const health=await fetch('/health'); daemonHealthy.value=health.ok && (await health.text())==='ok'; if(!daemonHealthy.value) throw new Error('Daemon local indisponível.'); await Promise.all([loadOverview(),loadAgenda(),...(selectedId.value?[refreshSelectedOccurrences(selectedId.value)]:[])]) } catch(cause) { daemonHealthy.value=false; overview.value=null; agenda.value=[]; error.value=cause instanceof Error?cause.message:'Daemon local indisponível.' } }
+function openAgendaSchedule(id:string) { window.location.href = `/schedules#${encodeURIComponent(id)}` }
+function goToCreateSchedule() { window.location.href = '/schedules?create=1' }
+async function refreshLive() { try { const health=await fetch('/health'); daemonHealthy.value=health.ok && (await health.text())==='ok'; if(!daemonHealthy.value) throw new Error('Daemon local indisponível.'); if(isHome) await Promise.all([loadOverview(),loadAgenda()]); } catch(cause) { daemonHealthy.value=false; overview.value=null; agenda.value=[]; error.value=cause instanceof Error?cause.message:'Daemon local indisponível.' } }
 
-async function loadOccurrences(scheduleId: string, reset = true) {
-  const requestId = ++occurrenceRequestId
-  const filter = occurrenceFilter.value
-  if(reset){ occurrences.value=[]; occurrenceCursor.value=null }
-  try { const params=new URLSearchParams({limit:'50'}); if(occurrenceCursor.value)params.set('cursor',occurrenceCursor.value); if(filter!=='all')params.set('status',filter); const page=await request<Page<Occurrence>>(`/schedules/${scheduleId}/occurrences?${params}`); if(requestId!==occurrenceRequestId || selectedId.value!==scheduleId || occurrenceFilter.value!==filter)return false; if(reset)occurrences.value=page.items; else { const known=new Set(occurrences.value.map(item=>item.id)); occurrences.value.push(...page.items.filter(item=>!known.has(item.id))) }; occurrenceCursor.value=page.nextCursor??null; return true }
-  catch (cause) { if(requestId===occurrenceRequestId && selectedId.value===scheduleId && occurrenceFilter.value===filter)error.value = cause instanceof Error ? cause.message : 'Falha ao consultar execuções.'; return false }
-}
-async function reloadOccurrences() { if(selectedId.value) await loadOccurrences(selectedId.value,true) }
-async function refreshSelectedOccurrences(id:string) { const filter=occurrenceFilter.value; const existing=[...occurrences.value]; const applied=await loadOccurrences(id,true); if(!applied || selectedId.value!==id || occurrenceFilter.value!==filter)return; const known=new Set(occurrences.value.map(item=>item.id)); occurrences.value.push(...existing.filter(item=>item.scheduleId===id && (filter==='all'||item.status===filter) && !known.has(item.id))) }
 
 function chooseSchedule(schedule: Schedule) {
-  occurrenceRequestId++
   selectedId.value = selectedId.value === schedule.id ? null : schedule.id
   error.value = ''
   if (selectedId.value) {
     prepareScheduleDraft(schedule)
-    void loadOccurrences(schedule.id)
-  } else occurrences.value = []
+  }
 }
 
 function prepareScheduleDraft(schedule: Schedule) {
@@ -224,8 +214,7 @@ async function occurrenceAction(item: Occurrence, action: 'cancel' | 'retry') {
   if (item.status === 'interrupted' && action === 'retry' && !confirmInterrupted) return
   try {
     await request<Occurrence>(`/occurrences/${item.id}/${action}`, { method: 'POST', ...(action === 'retry' ? { body: JSON.stringify({ confirmInterrupted }) } : {}) })
-    notice.value = action === 'cancel' ? 'Pedido de cancelamento aceito.' : 'Nova tentativa enfileirada.'
-    if (selectedId.value) await loadOccurrences(selectedId.value)
+    notice.value = action === 'cancel' ? 'Pedido de cancelamento aceito.' : 'Nova tentativa enfileirada.'; await loadGlobalRuns(true)
   } catch (cause) { error.value = cause instanceof Error ? cause.message : 'A ação não foi concluída.' }
 }
 
@@ -252,28 +241,38 @@ function decodePreset(expression:string) {
 }
 function formatDate(value?: string | null) { return value ? new Date(value).toLocaleString() : '—' }
 function timingLabel(timing: Timing) { return timing.type === 'cron' ? timing.expression : `Uma vez · ${formatDate(timing.at)}` }
+const visualTheme = ref('workshop')
+function setVisualTheme() {
+ document.documentElement.dataset.theme = visualTheme.value
+ try { localStorage.setItem('command-scheduler-theme', visualTheme.value) } catch { /* storage is optional */ }
+}
+try { const saved=localStorage.getItem('command-scheduler-theme'); if (saved && ['chalk','graphite','workshop'].includes(saved)) visualTheme.value=saved } catch { /* keep default */ }
+setVisualTheme()
+
 function statusLabel(status: string) { return ({ active: 'Ativo', paused: 'Pausado', cancelled: 'Cancelado', queued: 'Na fila', running: 'Executando', succeeded: 'Concluído', failed: 'Falhou', interrupted: 'Interrompido' } as Record<string,string>)[status] ?? status }
 
-onMounted(() => { loading.value = true; void Promise.all([refresh(),loadGlobalRuns(true)]).finally(() => { loading.value = false }); refreshTimer = window.setInterval(() => void refreshLive(), 3000) })
+onMounted(() => { loading.value = true; void Promise.all([...(isSchedules || isHome || isRuns ? [refresh()] : []), ...(isRuns ? [loadGlobalRuns(true)] : [])]).then(async () => { if (isSchedules && new URLSearchParams(location.search).get('create') === '1') showCreate.value = true; if (isSchedules && location.hash.length > 1) { const id = decodeURIComponent(location.hash.slice(1)); let schedule = schedules.value.find(item => item.id === id); if (!schedule) { try { schedule = await request<Schedule>(`/schedules/${id}`); schedules.value.unshift(schedule) } catch { /* schedule may have been removed */ } }; if (schedule) { selectedId.value = id; prepareScheduleDraft(schedule) } } }).finally(() => { loading.value = false }); refreshTimer = window.setInterval(() => void refreshLive(), 3000) })
 onUnmounted(() => { if (refreshTimer) window.clearInterval(refreshTimer) })
 </script>
 
 <template>
   <ApiReference v-if="isApiReference" :configuration="apiConfiguration" />
-  <main v-else class="app-shell instrument-design" data-theme="workshop">
+  <main v-else class="app-shell instrument-design" :data-theme="visualTheme">
     <header class="topbar">
       <a class="brand" href="/" aria-label="Command Scheduler, início"><span class="brand-mark" aria-hidden="true">↗</span><span>command<span class="brand-light">scheduler</span></span></a>
-      <nav aria-label="Navegação principal"><a href="#schedules">Schedules</a><a href="/docs/api">API reference</a><span class="daemon" :class="{'daemon-offline':!daemonHealthy}"><i aria-hidden="true"></i>{{ daemonHealthy ? 'Daemon local' : 'Daemon indisponível' }}</span></nav>
+      <label class="theme-control">Tema<select v-model="visualTheme" @change="setVisualTheme"><option value="chalk">Chalk</option><option value="graphite">Graphite</option><option value="workshop">Workshop</option></select></label><nav aria-label="Navegação principal"><a href="/">Início</a><a href="/schedules">Agendamentos</a><a href="/runs">Execuções</a><a href="/docs/api">API reference</a><span class="daemon" :class="{'daemon-offline':!daemonHealthy}"><i aria-hidden="true"></i>{{ daemonHealthy ? 'Daemon local' : 'Daemon indisponível' }}</span></nav>
     </header>
+    <p v-if="notice" class="notice" role="status">{{ notice }} <button type="button" aria-label="Dispensar mensagem" @click="notice = ''">×</button></p>
+    <p v-if="error" class="alert" role="alert">{{ error }}</p>
 
-    <section class="cockpit" aria-label="Resumo operacional">
-      <div class="section-heading"><div><p class="eyebrow">OPERAÇÃO LOCAL</p><h1>Cockpit</h1></div><div class="cockpit-controls"><label>Indicadores<select v-model.number="periodDays" @change="updateDashboard"><option :value="1">Hoje</option><option :value="7">7 dias</option><option :value="30">30 dias</option><option :value="90">90 dias</option></select></label><button class="primary" type="button" @click="showCreate = !showCreate">{{ showCreate ? 'Fechar formulário' : '＋ Novo schedule' }}</button></div></div>
+    <section v-if="isHome" class="cockpit" aria-label="Resumo operacional">
+      <div class="section-heading"><div><p class="eyebrow">OPERAÇÃO LOCAL</p><h1>Cockpit</h1></div><div class="cockpit-controls"><label>Indicadores<select v-model.number="periodDays" @change="updateDashboard"><option :value="1">Hoje</option><option :value="7">7 dias</option><option :value="30">30 dias</option><option :value="90">90 dias</option></select></label><button class="primary" type="button" @click="goToCreateSchedule">＋ Novo schedule</button></div></div>
       <div class="metric-grid"><article class="next-metric"><span>PRÓXIMO AGENDAMENTO</span><strong>{{ overview?.next?.name || overview?.next?.program || 'Nenhum agendamento ativo' }}</strong><small>{{ overview?.next ? formatDate(overview.next.at) : '—' }}</small></article><article><span>ATIVOS</span><strong>{{ overview?.schedules.active ?? '—' }}</strong></article><article><span>PAUSADOS</span><strong>{{ overview?.schedules.paused ?? '—' }}</strong></article><article><span>CANCELADOS</span><strong>{{ overview?.schedules.cancelled ?? '—' }}</strong></article><article><span>CONCLUÍDOS · PERÍODO</span><strong>{{ overview?.completed ?? '—' }}</strong></article><article><span>FALHAS · PERÍODO</span><strong class="failure-number">{{ overview?.failed ?? '—' }}</strong></article></div>
     </section>
 
-    <section class="agenda-panel" aria-labelledby="agenda-title"><div class="section-heading"><div><p class="eyebrow">AGENDA</p><h2 id="agenda-title">Agendamentos e execuções</h2></div><div class="inline-controls"><label>Visualização<select v-model="agendaPeriod" @change="updateDashboard"><option value="day">Dia</option><option value="week">Semana</option><option value="month">Mês</option></select></label></div></div><div v-if="agenda.length" class="agenda-list"><article v-for="item in agenda" :key="`${item.scheduleId}-${item.at}-${item.occurrenceId||'scheduled'}`" class="agenda-item"><div class="agenda-item-content"><div class="agenda-item-heading"><button class="agenda-title" type="button" @click="openAgendaSchedule(item.scheduleId)">{{ item.name || item.program }}</button><span class="agenda-status" :class="`agenda-status-${item.status || 'scheduled'}`">{{ item.status ? statusLabel(item.status) : 'Agendado' }}</span></div><time class="agenda-time" :datetime="item.at">{{ formatDate(item.at) }}</time><code class="agenda-command" :title="item.program">{{ item.program }}</code></div></article></div><p v-else class="history-empty">Nenhum schedule ativo ou execução concluída neste período.</p></section>
+    <section v-if="isHome" class="agenda-panel" aria-labelledby="agenda-title"><div class="section-heading"><div><p class="eyebrow">PRÓXIMAS 24 HORAS</p><h2 id="agenda-title">Execuções previstas</h2></div><button class="quiet-button" type="button" @click="updateDashboard">Atualizar ↻</button></div><div v-if="agenda.length" class="agenda-list"><article v-for="item in agenda" :key="`${item.scheduleId}-${item.at}-${item.occurrenceId||'scheduled'}`" class="agenda-item"><div class="agenda-item-content"><div class="agenda-item-heading"><button class="agenda-title" type="button" @click="openAgendaSchedule(item.scheduleId)">{{ item.name || item.program }}</button><span class="agenda-status" :class="`agenda-status-${item.status || 'scheduled'}`">{{ item.status ? statusLabel(item.status) : 'Agendado' }}</span></div><time class="agenda-time" :datetime="item.at">{{ formatDate(item.at) }}</time><code class="agenda-command" :title="item.program">{{ item.program }}</code></div></article></div><p v-else class="history-empty">Nenhuma execução prevista ou enfileirada nas próximas 24 horas.</p></section>
 
-    <section v-if="showCreate" class="form-panel" aria-labelledby="create-title">
+    <section v-if="isSchedules && showCreate" class="form-panel" aria-labelledby="create-title">
       <div class="section-heading"><div><p class="eyebrow">CONFIGURAÇÃO</p><h2 id="create-title">Criar schedule</h2></div><button class="icon-button" type="button" aria-label="Fechar" @click="showCreate = false">×</button></div>
       <form class="schedule-form" @submit.prevent="createSchedule">
         <label>Nome <span>opcional</span><input v-model="newSchedule.name" placeholder="Ex.: Sincronizar relatórios"></label>
@@ -291,10 +290,8 @@ onUnmounted(() => { if (refreshTimer) window.clearInterval(refreshTimer) })
       </form>
     </section>
 
-    <section id="schedules" class="workspace">
+    <section v-if="isSchedules" id="schedules" class="workspace">
       <div class="section-heading"><div><p class="eyebrow">CONFIGURAÇÃO</p><h2>Schedules <span class="count">{{ schedules.length.toString().padStart(2, '0') }}</span></h2></div><div class="inline-controls"><label>Estado<select v-model="scheduleFilter" @change="refresh()"><option value="all">Todos</option><option value="active">Ativos</option><option value="paused">Inativos · pausados</option><option value="cancelled">Cancelados</option></select></label><button class="quiet-button" type="button" @click="refresh()">Atualizar ↻</button></div></div>
-      <p v-if="notice" class="notice" role="status">{{ notice }} <button type="button" aria-label="Dispensar mensagem" @click="notice = ''">×</button></p>
-      <p v-if="error" class="alert" role="alert">{{ error }}</p>
       <div v-if="loading && schedules.length === 0" class="empty">Conectando ao daemon local…</div>
       <div v-else-if="schedules.length === 0" class="empty"><span class="empty-mark" aria-hidden="true">⌁</span><h3>Nenhum schedule ainda</h3><p>Crie o primeiro e deixe uma tarefa recorrente sair da sua lista mental.</p><button class="text-button" type="button" @click="showCreate = true">Criar schedule <span aria-hidden="true">→</span></button></div>
       <div v-else class="schedule-list">
@@ -308,21 +305,13 @@ onUnmounted(() => { if (refreshTimer) window.clearInterval(refreshTimer) })
             <div class="detail-actions"><button type="button" @click="scheduleAction(schedule, 'runs')">▶ Executar agora</button><button v-if="schedule.status === 'active'" type="button" @click="scheduleAction(schedule, 'pause')">Ⅱ Pausar</button><button v-if="schedule.status === 'paused'" type="button" @click="scheduleAction(schedule, 'resume')">▶ Retomar</button><button type="button" @click="showEdit = !showEdit">Editar</button><button class="danger-link" type="button" :disabled="schedule.status === 'cancelled'" @click="scheduleAction(schedule, 'cancel')">Cancelar</button></div>
             <form v-if="showEdit" class="inline-form" @submit.prevent="updateSchedule"><h3>Editar configuração</h3><div class="form-row"><label>Nome<input v-model="editDraft.name"></label><label>Executável <span>somente o programa</span><input v-model="editDraft.program" required><small>Sem opções ou código; use Argumentos abaixo.</small></label></div><p v-if="looksLikeWholeCommand(editDraft.program)" class="command-input-warning" role="alert">Parece que você colou a linha de comando inteira em Executável. Separe o programa dos argumentos.</p><label>Argumentos <span>array JSON de strings</span><textarea v-model="editDraft.args" rows="2" spellcheck="false"></textarea><small>Exemplo Python: <code>["-c", "print('Hello, world!')"]</code></small></label><fieldset><legend>Horário</legend><label class="radio"><input v-model="editDraft.timingType" type="radio" value="cron"> Recorrente</label><label class="radio"><input v-model="editDraft.timingType" type="radio" value="once"> Uma vez</label><template v-if="editDraft.timingType==='cron'"><label>Repetição<select v-model="editDraft.preset"><option value="minutes">A cada N minutos</option><option value="hours">A cada N horas</option><option value="daily">Diariamente</option><option value="weekly">Dias da semana</option><option value="monthly">Mensalmente</option><option value="advanced">Cron avançado</option></select></label><label v-if="['minutes','hours'].includes(editDraft.preset)">Intervalo<select v-model.number="editDraft.interval"><option v-for="n in (editDraft.preset==='minutes'?[1,2,3,4,5,6,10,12,15,20,30]:[1,2,3,4,6,8,12])" :key="n" :value="n">A cada {{ n }} {{ editDraft.preset==='minutes'?'minutos':'horas' }}</option></select></label><label v-if="['daily','weekly','monthly'].includes(editDraft.preset)">Horário local<input v-model="editDraft.hour" type="time"></label><label v-if="editDraft.preset==='weekly'">Dias da semana<div class="weekday-picker"><label v-for="(day,index) in ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']" :key="day"><input v-model="editDraft.weekdays" type="checkbox" :value="index">{{ day }}</label></div></label><label v-if="editDraft.preset==='monthly'">Dia do mês<input v-model.number="editDraft.dayOfMonth" type="number" min="1" max="31"></label><label v-if="editDraft.preset==='advanced'">Cron<input v-model="editDraft.expression" required></label><small v-if="editDraft.preset!=='advanced'" class="cron-preview">Equivalente cron: <code>{{ encodePreset(editDraft) }}</code> · fuso local</small></template><label v-else>Data e hora local<input v-model="editDraft.at" required type="datetime-local"></label></fieldset><label>Política de vencidas<select v-model="editDraft.missedPolicy"><option value="skip">Pular</option><option value="consolidate">Consolidar</option><option value="sequence">Sequenciar</option></select></label><button class="primary" type="submit" :disabled="saving || looksLikeWholeCommand(editDraft.program)">Salvar alteração</button></form>
             <form class="inline-form params-form" @submit.prevent="saveParameters"><label>Parâmetros atuais<textarea v-model="parameterDraft" rows="4" spellcheck="false"></textarea></label><button class="secondary" type="submit" :disabled="saving">Atualizar parâmetros</button></form>
-            <div class="history-heading"><h3>Execuções</h3><div class="inline-controls"><label>Estado<select v-model="occurrenceFilter" @change="reloadOccurrences"><option value="all">Todos</option><option value="queued">Na fila</option><option value="running">Executando</option><option value="succeeded">Concluídos</option><option value="failed">Falhas</option><option value="interrupted">Interrompidos</option><option value="cancelled">Cancelados</option></select></label><span>{{ occurrences.length }} carregadas</span></div></div>
-            <div v-if="occurrences.length === 0" class="history-empty">Ainda não há execuções registradas.</div>
-            <article v-for="item in occurrences" :key="item.id" class="occurrence-row">
-              <span class="status-dot" :class="`status-${item.status}`" aria-hidden="true"></span><div class="occurrence-main"><strong>{{ statusLabel(item.status) }} <small>· {{ item.source }} · tentativa {{ item.attempt }}</small></strong><span>Agendada {{ formatDate(item.scheduledFor) }} <template v-if="item.exitCode !== null && item.exitCode !== undefined">· código {{ item.exitCode }}</template></span>
-                <span v-if="item.missedOccurrences" class="missed">{{ item.missedOccurrences.count }} horários vencidos · {{ formatDate(item.missedOccurrences.from) }} — {{ formatDate(item.missedOccurrences.through) }}</span>
-                <details v-if="item.stdout !== undefined || item.stderr !== undefined"><summary>Ver saída <span v-if="item.stdoutTruncated || item.stderrTruncated">· truncada em 1 MiB</span></summary><pre v-if="item.stdout">{{ item.stdout }}</pre><pre v-if="item.stderr" class="stderr">{{ item.stderr }}</pre></details>
-              </div><div class="occurrence-actions"><button v-if="item.status === 'running' || item.status === 'queued'" type="button" @click="occurrenceAction(item, 'cancel')">Cancelar</button><button v-if="item.status === 'failed' || item.status === 'interrupted'" type="button" @click="occurrenceAction(item, 'retry')">Tentar novamente</button></div>
-            </article>
-            <button v-if="occurrenceCursor" class="secondary load-more" type="button" @click="loadOccurrences(schedule.id,false)">Carregar mais deste schedule</button>
+
           </div>
         </article>
       </div>
       <button v-if="scheduleCursor" class="secondary load-more" type="button" @click="loadMoreSchedules">Carregar mais schedules</button>
     </section>
-    <section class="history-panel"><div class="section-heading"><div><p class="eyebrow">HISTÓRICO GLOBAL</p><h2>Execuções</h2></div><div class="inline-controls"><label>Período<select v-model.number="historyDays"><option :value="7">7 dias</option><option :value="30">30 dias</option><option :value="90">90 dias</option></select></label><label>Estado<select v-model="runFilter"><option value="all">Todos</option><option value="queued">Na fila</option><option value="running">Executando</option><option value="succeeded">Concluídos</option><option value="failed">Falhas</option><option value="interrupted">Interrompidos</option><option value="cancelled">Cancelados</option></select></label><label>Schedule ID<input v-model="historyScheduleId" placeholder="Filtrar por schedule"></label><button class="secondary" type="button" @click="loadGlobalRuns(true)">Aplicar filtros</button></div></div><p v-if="globalRuns.length===0" class="history-empty">Nenhuma execução encontrada para este filtro.</p><article v-for="item in globalRuns" :key="item.id" class="occurrence-row global-occurrence"><span class="status-dot" :class="`status-${item.status}`"></span><div class="occurrence-main"><strong>{{ statusLabel(item.status) }} <small>· {{ item.source }} · tentativa {{ item.attempt }} · schedule {{ item.scheduleId.slice(0,8) }}</small></strong><span>Agendada {{ formatDate(item.scheduledFor) }} <template v-if="item.finishedAt">· finalizada {{ formatDate(item.finishedAt) }}</template><template v-if="item.exitCode!==null && item.exitCode!==undefined">· código {{ item.exitCode }}</template></span><button class="output-link" type="button" @click="loadGlobalOutput(item)">{{ globalOutputs[item.id]?'Ocultar saída':'Ver saída' }}</button><template v-if="globalOutputs[item.id]"><pre v-if="globalOutputs[item.id].stdout">{{ globalOutputs[item.id].stdout }}</pre><pre v-if="globalOutputs[item.id].stderr" class="stderr">{{ globalOutputs[item.id].stderr }}</pre></template></div><div class="occurrence-actions"><button v-if="item.status==='running'||item.status==='queued'" type="button" @click="occurrenceAction(item,'cancel')">Cancelar</button><button v-if="item.status==='failed'||item.status==='interrupted'" type="button" @click="occurrenceAction(item,'retry')">Tentar novamente</button></div></article><button v-if="historyCursor" class="secondary load-more" type="button" @click="loadGlobalRuns()">Carregar mais execuções</button></section>
+    <section v-if="isRuns" class="history-panel"><div class="section-heading"><div><p class="eyebrow">HISTÓRICO GLOBAL</p><h2>Execuções</h2></div><div class="inline-controls"><label>Período<select v-model.number="historyDays"><option :value="7">7 dias</option><option :value="30">30 dias</option><option :value="90">90 dias</option></select></label><label>Estado<select v-model="runFilter"><option value="all">Todos</option><option value="queued">Na fila</option><option value="running">Executando</option><option value="succeeded">Concluídos</option><option value="failed">Falhas</option><option value="interrupted">Interrompidos</option><option value="cancelled">Cancelados</option></select></label><label>Schedule ID<input v-model="historyScheduleId" placeholder="Filtrar por schedule"></label><button class="secondary" type="button" @click="loadGlobalRuns(true)">Aplicar filtros</button><button class="quiet-button" type="button" @click="loadGlobalRuns(true)">Atualizar ↻</button></div></div><p v-if="globalRuns.length===0" class="history-empty">Nenhuma execução encontrada para este filtro.</p><article v-for="item in globalRuns" :key="item.id" class="occurrence-row global-occurrence"><span class="status-dot" :class="`status-${item.status}`"></span><div class="occurrence-main"><strong>{{ item.scheduleName || item.scheduleProgram?.split(/[\\/]/).pop() || item.scheduleId.slice(0,8) }} <small>· {{ statusLabel(item.status) }} · {{ item.source }} · tentativa {{ item.attempt }} · schedule {{ item.scheduleId.slice(0,8) }}</small></strong><span>Agendada {{ formatDate(item.scheduledFor) }} <template v-if="item.finishedAt">· finalizada {{ formatDate(item.finishedAt) }}</template><template v-if="item.exitCode!==null && item.exitCode!==undefined">· código {{ item.exitCode }}</template></span><button class="output-link" type="button" @click="loadGlobalOutput(item)">{{ globalOutputs[item.id]?'Ocultar saída':'Ver saída' }}</button><template v-if="globalOutputs[item.id]"><pre v-if="globalOutputs[item.id].stdout">{{ globalOutputs[item.id].stdout }}</pre><pre v-if="globalOutputs[item.id].stderr" class="stderr">{{ globalOutputs[item.id].stderr }}</pre></template></div><div class="occurrence-actions"><button v-if="item.status==='running'||item.status==='queued'" type="button" @click="occurrenceAction(item,'cancel')">Cancelar</button><button v-if="item.status==='failed'||item.status==='interrupted'" type="button" @click="occurrenceAction(item,'retry')">Tentar novamente</button></div></article><button v-if="historyCursor" class="secondary load-more" type="button" @click="loadGlobalRuns()">Carregar mais execuções</button></section>
     <footer><span>COMMAND SCHEDULER <span class="footer-dot">·</span> LOCAL FIRST</span><a href="/docs/api">API reference</a><a href="/health" target="_blank" rel="noreferrer">Estado do daemon</a></footer>
   </main>
 </template>

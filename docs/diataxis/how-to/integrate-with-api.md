@@ -18,7 +18,7 @@ curl --fail-with-body --silent --show-error \
     "missedPolicy": "consolidate",
     "parameters": {"tenant": "acme"}
   }' \
-  http://127.0.0.1:4371/api/v1/schedules
+  http://127.0.0.1:30002/api/v1/schedules
 ```
 
 Use um caminho de executável acessível ao usuário que executa o daemon. Cada elemento de `args` vira exatamente um argumento do processo. Para schedules únicos, `timing` tem formato `{"type":"once","at":"<RFC3339>"}` e novas programações devem estar no futuro; horários já vencidos retornam 400. O cron tem cinco campos e usa o fuso local da máquina.
@@ -33,7 +33,7 @@ Guarde o `id` do schedule retornado. Uma execução manual pode ser solicitada c
 
 ```sh
 curl --fail-with-body --silent --show-error \
-  -X POST http://127.0.0.1:4371/api/v1/schedules/SCHEDULE_ID/runs
+  -X POST http://127.0.0.1:30002/api/v1/schedules/SCHEDULE_ID/runs
 ```
 
 A resposta contém o identificador da ocorrência. Consulte `GET /api/v1/occurrences/OCCURRENCE_ID` até `status` ser terminal. A ocorrência contém `exitCode`, `stdout`, `stderr` e indicadores de saída truncada.

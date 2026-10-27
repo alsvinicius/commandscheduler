@@ -51,7 +51,7 @@ O binário da CLI é um cliente separado, mas não um serviço independente. O b
 
 O fluxo de `src/main.rs` é ordenado para não recuperar dados enquanto outro daemon ativo usa o mesmo banco:
 
-1. Lê `COMMAND_SCHEDULER_ADDR` ou usa `127.0.0.1:4371`; rejeita endereço não loopback.
+1. Lê `COMMAND_SCHEDULER_ADDR` ou usa `127.0.0.1:30002`; rejeita endereço não loopback.
 2. Resolve o caminho SQLite e adquire lock exclusivo no arquivo `<banco>.lock`. O lock é associado ao caminho canônico, para aliases por symlink do mesmo banco não iniciarem outro daemon.
 3. Faz bind do listener HTTP. Uma porta ocupada encerra a inicialização antes de tocar na recuperação.
 4. Abre o SQLite, habilita foreign keys, WAL, pool de até cinco conexões e busy timeout de cinco segundos; executa as migrações.
@@ -115,7 +115,7 @@ As migrações existentes são cumulativas e seus checksums não devem ser alter
 
 ## Interface e clientes
 
-Em produção, Axum serve os arquivos estáticos da UI na mesma origem da API. A rota `/docs/api` carrega Scalar configurado para ler `/openapi.yaml`. No desenvolvimento, Vite atende somente em `127.0.0.1:5173` e encaminha `/api` e `/health` ao daemon de desenvolvimento (normalmente `127.0.0.1:4372`), preservando a autoridade local esperada pelo middleware.
+Em produção, Axum serve os arquivos estáticos da UI na mesma origem da API. A rota `/docs/api` carrega Scalar configurado para ler `/openapi.yaml`. No desenvolvimento, Vite atende somente em `127.0.0.1:30014` e encaminha `/api` e `/health` ao daemon de desenvolvimento (normalmente `127.0.0.1:30002`), preservando a autoridade local esperada pelo middleware.
 
 A SPA em `App.vue` usa `fetch` para `/api/v1`, mantém o estado da lista, detalhe selecionado, agenda, cockpit e histórico, e atualiza dados periodicamente. A CLI converte subcomandos em requisições HTTP, restringe `--server` a HTTP em loopback e percorre páginas para comandos de listagem. Nenhum desses clientes contém uma segunda implementação do scheduler.
 

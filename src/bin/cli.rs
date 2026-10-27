@@ -6,12 +6,12 @@ use std::{io::Write, net::IpAddr, process::ExitCode, time::Duration};
 #[derive(Debug, Parser)]
 #[command(version, about = "Command Scheduler local API client")]
 struct Args {
-    /// Daemon base URL (defaults to COMMAND_SCHEDULER_URL or http://127.0.0.1:4371)
+    /// Daemon base URL (defaults to COMMAND_SCHEDULER_URL or http://127.0.0.1:30002)
     #[arg(
         long,
         global = true,
         env = "COMMAND_SCHEDULER_URL",
-        default_value = "http://127.0.0.1:4371"
+        default_value = "http://127.0.0.1:30002"
     )]
     server: String,
     #[command(subcommand)]
@@ -246,9 +246,9 @@ mod tests {
     #[test]
     fn accepts_local_daemon_urls() {
         for url in [
-            "http://127.0.0.1:4371",
-            "http://[::1]:4371",
-            "http://localhost:4371",
+            "http://127.0.0.1:30002",
+            "http://[::1]:30002",
+            "http://localhost:30002",
         ] {
             assert!(validate_server_url(url).is_ok(), "{url}");
         }
@@ -256,7 +256,7 @@ mod tests {
 
     #[test]
     fn rejects_non_loopback_daemon_urls() {
-        assert!(validate_server_url("http://192.0.2.10:4371").is_err());
-        assert!(validate_server_url("ftp://localhost:4371").is_err());
+        assert!(validate_server_url("http://192.0.2.10:30002").is_err());
+        assert!(validate_server_url("ftp://localhost:30002").is_err());
     }
 }

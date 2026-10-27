@@ -154,3 +154,7 @@ Evidência Linux (2026-10-13): o unit `packaging/systemd/command-scheduler.servi
 
 
 A CLI aceita apenas URLs HTTP de `localhost`/IP loopback para a API e encerra requests após 30 segundos; falhas são apresentadas sem confirmação de sucesso.
+
+### Revisão visual Instrument Design (2026-10-19)
+
+A interface oferece Chalk, Graphite e Workshop com preferência local e Workshop como padrão. Papéis de superfície, tinta e estados estão no CSS da UI; o contrato da API não muda. Fontes: TASK-009/010/018 e REQ-008–011. Evidência e escopo em [revisão visual](instrument-design-update.md).

@@ -15,11 +15,11 @@ systemctl --user daemon-reload
 systemctl --user enable --now command-scheduler.service
 ```
 
-O daemon atende apenas `127.0.0.1:4371`. Abra `http://127.0.0.1:4371`; a referência OpenAPI fica em `/docs/api`. O banco segue o diretório local de dados do usuário; `COMMAND_SCHEDULER_DB_PATH` pode definir outro caminho antes de iniciar o serviço. Atualize os arquivos compilados e execute `systemctl --user restart command-scheduler.service` após uma nova versão.
+O daemon atende apenas `127.0.0.1:30002`. Abra `http://127.0.0.1:30002`; a referência OpenAPI fica em `/docs/api`. O banco segue o diretório local de dados do usuário; `COMMAND_SCHEDULER_DB_PATH` pode definir outro caminho antes de iniciar o serviço. Atualize os arquivos compilados e execute `systemctl --user restart command-scheduler.service` após uma nova versão.
 
-Confira a operação com `systemctl --user status command-scheduler.service`, `journalctl --user -u command-scheduler.service` e `curl http://127.0.0.1:4371/health`. Para iniciar serviços de usuário no boot sem sessão interativa, habilite o linger uma vez com `loginctl enable-linger "$USER"` (pode exigir autorização do administrador da máquina).
+Confira a operação com `systemctl --user status command-scheduler.service`, `journalctl --user -u command-scheduler.service` e `curl http://127.0.0.1:30002/health`. Para iniciar serviços de usuário no boot sem sessão interativa, habilite o linger uma vez com `loginctl enable-linger "$USER"` (pode exigir autorização do administrador da máquina).
 
-Use `command-scheduler-cli --help` para consultar os comandos. A CLI usa a API local em `127.0.0.1:4371`; os exemplos de criação, manutenção e execução estão no [guia da CLI](cli.md). Se `~/.local/bin` não estiver no `PATH`, acrescente `export PATH="$HOME/.local/bin:$PATH"` ao arquivo de inicialização do shell.
+Use `command-scheduler-cli --help` para consultar os comandos. A CLI usa a API local em `127.0.0.1:30002`; os exemplos de criação, manutenção e execução estão no [guia da CLI](cli.md). Se `~/.local/bin` não estiver no `PATH`, acrescente `export PATH="$HOME/.local/bin:$PATH"` ao arquivo de inicialização do shell.
 
 Para atualizar, copie os binários/assets novos e execute `systemctl --user restart command-scheduler.service`. Para parar: `systemctl --user disable --now command-scheduler.service`. Para remover, apague a unit em `~/.config/systemd/user/command-scheduler.service`, recarregue o manager e remova os binários/assets se não forem mais necessários. A base SQLite permanece no diretório de dados local até ser removida pelo usuário.
 

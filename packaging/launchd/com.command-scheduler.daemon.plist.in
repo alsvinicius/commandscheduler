@@ -10,7 +10,7 @@
   <key>KeepAlive</key><true/>
   <key>EnvironmentVariables</key>
   <dict>
-    <key>COMMAND_SCHEDULER_ADDR</key><string>127.0.0.1:4371</string>
+    <key>COMMAND_SCHEDULER_ADDR</key><string>127.0.0.1:30002</string>
     <key>COMMAND_SCHEDULER_WEB_DIR</key><string>@INSTALL_DIR@/ui</string>
   </dict>
   <key>StandardOutPath</key><string>@HOME_DIR@/Library/Logs/command-scheduler.log</string>

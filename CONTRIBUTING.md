@@ -16,9 +16,9 @@ O MVP usa um único limite de projeto: daemon e CLI em Rust na raiz; interface V
 - `cargo audit` / `pnpm audit`: conferem vulnerabilidades conhecidas nos lockfiles, sem exceções.
 - `python3 scripts/check_publication.py`: verifica metadados, links locais, migrações embutidas e a lista explícita de arquivos do pacote Cargo.
 - `python3 scripts/export_third_party_notices.py`: regenera os avisos de terceiros após mudanças de dependências; `--check` verifica que estão atualizados.
-- `make up` / `make down`: inicia/encerra daemon (porta 4372) e Vite (porta 5173) para desenvolvimento; logs e SQLite isolado ficam em `.tmp/dev/`.
+- `make up` / `make down`: inicia/encerra daemon (porta 30002) e Vite (porta 30014) para desenvolvimento; logs e SQLite isolado ficam em `.tmp/dev/`.
 - `make backend` / `make frontend`: inicia o daemon ou o Vite em primeiro plano.
-- `pnpm ui:dev`: inicia Vite em `127.0.0.1:5173` e encaminha `/api` e `/health` ao daemon em `127.0.0.1:4371`.
+- `pnpm ui:dev`: inicia Vite em `127.0.0.1:30014` e encaminha `/api` e `/health` ao daemon em `127.0.0.1:30002`.
 - `pnpm ui:build`: verifica tipos com `vue-tsc` e compila a UI para `ui/dist`.
 - `pnpm openapi:lint`: valida a especificação OpenAPI 3.1 versionada.
 - `python3 -m unittest discover -s tests/bdd -v`: executa cenários de jornada API/CLI em daemon temporário.

@@ -1,6 +1,6 @@
 # Guia da CLI
 
-A CLI é cliente do daemon local; mantenha o daemon ativo antes dos comandos. O padrão é `http://127.0.0.1:4371`. Configure outro endereço de loopback com `--server URL` ou `COMMAND_SCHEDULER_URL`.
+A CLI é cliente do daemon local; mantenha o daemon ativo antes dos comandos. O padrão é `http://127.0.0.1:30002`. Configure outro endereço de loopback com `--server URL` ou `COMMAND_SCHEDULER_URL`.
 
 ## Criar schedules
 

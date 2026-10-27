@@ -249,7 +249,7 @@ def main() -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     collect = commands.add_parser("monitor", help="append health probes to a JSONL log")
     collect.add_argument("--log", type=Path, required=True)
-    collect.add_argument("--url", default="http://127.0.0.1:4371/health")
+    collect.add_argument("--url", default="http://127.0.0.1:30002/health")
     collect.add_argument("--interval-seconds", type=float, default=10)
     collect.add_argument("--timeout-seconds", type=float, default=2)
     summarize = commands.add_parser("report", help="summarize a UTC observation window")

@@ -1,6 +1,6 @@
 # Referência da CLI
 
-O binário `command-scheduler-cli` é um cliente HTTP do daemon local. O endereço padrão é `http://127.0.0.1:4371`.
+O binário `command-scheduler-cli` é um cliente HTTP do daemon local. O endereço padrão é `http://127.0.0.1:30002`.
 
 ## Opções globais
 

@@ -25,8 +25,12 @@ Escolha **Uma vez** para informar uma data e hora local. Revise a política de h
 
 ## Consultar o schedule
 
-Após salvar, o schedule aparece na lista e no cockpit. A lista permite filtrar ativos, pausados e cancelados. A agenda apresenta instâncias futuras por dia, semana ou mês. O histórico global aceita filtros por período, estado e identificador de schedule; use **Carregar mais execuções** para consultar páginas seguintes.
+A interface separa a operação em três páginas: **Início** mostra o cockpit e as execuções previstas para as próximas 24 horas; **Agendamentos** permite criar, filtrar, editar, pausar, retomar e cancelar schedules; **Execuções** mostra o histórico global. A agenda do início reúne horários previstos e ocorrências já enfileiradas ou em execução. O histórico aceita filtros por período, estado e identificador de schedule; use **Carregar mais execuções** para consultar páginas seguintes. Cada execução mostra o nome do schedule responsável; schedules sem nome são identificados pelo executável.
 
 Para alterar um schedule existente, abra-o na lista e selecione **Editar**. A UI reconhece presets comuns de cron; expressões fora desses formatos aparecem como **Cron avançado**.
 
 Para os detalhes dos campos e das operações HTTP, consulte a [referência OpenAPI](../../engineering/api/openapi.yaml). Para separar executável e argumentos, veja [como executar um programa com argumentos](run-program-with-arguments.md).
+
+## Tema visual
+
+Use **Tema** no cabeçalho para selecionar Chalk, Graphite ou Workshop. A preferência fica neste navegador; Workshop é o padrão. A seleção não altera schedules ou execuções.

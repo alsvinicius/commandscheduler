@@ -166,6 +166,10 @@ struct SchedulePage {
 struct OccurrenceDto {
     id: String,
     schedule_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    schedule_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    schedule_program: Option<String>,
     status: String,
     source: String,
     attempt: i64,
@@ -731,6 +735,26 @@ async fn get_agenda(
             _ => {}
         }
     }
+    let queued = sqlx::query_as::<_, (String, Option<String>, String, String, String, i64)>(
+        "SELECT o.schedule_id,s.name,s.program,o.id,o.status,COALESCE(o.scheduled_for,o.started_at,o.created_at) FROM occurrences o JOIN schedules s ON s.id=o.schedule_id WHERE o.status='running' OR (o.status='queued' AND COALESCE(o.scheduled_for,o.created_at)>=? AND COALESCE(o.scheduled_for,o.created_at)<?)",
+    )
+    .bind(future_from)
+    .bind(to)
+    .fetch_all(&state.pool)
+    .await
+    .map_err(ApiError::db)?;
+    for (schedule_id, name, program, occurrence_id, status, at) in queued {
+        let at = iso_from_micros(at)?;
+        items.retain(|item| !(item.schedule_id == schedule_id && item.at == at));
+        items.push(AgendaItemDto {
+            schedule_id,
+            name,
+            program,
+            at,
+            occurrence_id: Some(occurrence_id),
+            status: Some(status),
+        });
+    }
     items.sort_by(|a, b| a.at.cmp(&b.at).then(a.schedule_id.cmp(&b.schedule_id)));
     items.truncate(500);
     let history = sqlx::query_as::<_, (String, Option<String>, String, String, String, i64)>(
@@ -769,30 +793,30 @@ async fn list_all_occurrences(
         validate_range(a, b)?;
     }
     let mut qb = sqlx::QueryBuilder::<sqlx::Sqlite>::new(
-        "SELECT id,schedule_id,status,source,attempt,created_at,scheduled_for,started_at,finished_at,exit_code,NULL AS stdout,NULL AS stderr,stdout_truncated,stderr_truncated,missed_count,missed_from,missed_through,retry_of_id FROM occurrences WHERE 1=1",
+        "SELECT o.id,o.schedule_id,s.name AS schedule_name,s.program AS schedule_program,o.status,o.source,o.attempt,o.created_at,o.scheduled_for,o.started_at,o.finished_at,o.exit_code,NULL AS stdout,NULL AS stderr,o.stdout_truncated,o.stderr_truncated,o.missed_count,o.missed_from,o.missed_through,o.retry_of_id FROM occurrences o LEFT JOIN schedules s ON s.id=o.schedule_id WHERE 1=1",
     );
     if let Some(status) = query.status {
-        qb.push(" AND status=").push_bind(status);
+        qb.push(" AND o.status=").push_bind(status);
     }
     if let Some(id) = query.schedule_id {
-        qb.push(" AND schedule_id=").push_bind(id);
+        qb.push(" AND o.schedule_id=").push_bind(id);
     }
     if let Some(from) = from {
-        qb.push(" AND COALESCE(finished_at,created_at)>=")
+        qb.push(" AND COALESCE(o.finished_at,o.created_at)>=")
             .push_bind(from);
     }
     if let Some(to) = to {
-        qb.push(" AND COALESCE(finished_at,created_at)<")
+        qb.push(" AND COALESCE(o.finished_at,o.created_at)<")
             .push_bind(to);
     }
     if let Some((created, id)) = cursor {
-        qb.push(" AND (created_at,id)<(")
+        qb.push(" AND (o.created_at,o.id)<(")
             .push_bind(created)
             .push(",")
             .push_bind(id)
             .push(")");
     }
-    qb.push(" ORDER BY created_at DESC,id DESC LIMIT ")
+    qb.push(" ORDER BY o.created_at DESC,o.id DESC LIMIT ")
         .push_bind(limit as i64 + 1);
     let rows = qb
         .build_query_as::<OccurrenceRow>()
@@ -1149,9 +1173,9 @@ async fn list_occurrences(
         if !valid_occurrence_status(status) {
             return Err(ApiError::bad("invalid occurrence status"));
         }
-        sqlx::query_as::<_,OccurrenceRow>("SELECT id,schedule_id,status,source,attempt,created_at,scheduled_for,started_at,finished_at,exit_code,stdout,stderr,stdout_truncated,stderr_truncated,missed_count,missed_from,missed_through,retry_of_id FROM occurrences WHERE schedule_id=? AND status=? AND (? IS NULL OR (created_at,id)<(?,?)) ORDER BY created_at DESC,id DESC LIMIT ?").bind(&schedule_id).bind(status).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.1.as_str())).bind(limit as i64+1).fetch_all(&state.pool).await.map_err(ApiError::db)?
+        sqlx::query_as::<_,OccurrenceRow>("SELECT o.id,o.schedule_id,s.name AS schedule_name,s.program AS schedule_program,o.status,o.source,o.attempt,o.created_at,o.scheduled_for,o.started_at,o.finished_at,o.exit_code,o.stdout,o.stderr,o.stdout_truncated,o.stderr_truncated,o.missed_count,o.missed_from,o.missed_through,o.retry_of_id FROM occurrences o LEFT JOIN schedules s ON s.id=o.schedule_id WHERE o.schedule_id=? AND o.status=? AND (? IS NULL OR (o.created_at,o.id)<(?,?)) ORDER BY o.created_at DESC,o.id DESC LIMIT ?").bind(&schedule_id).bind(status).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.1.as_str())).bind(limit as i64+1).fetch_all(&state.pool).await.map_err(ApiError::db)?
     } else {
-        sqlx::query_as::<_,OccurrenceRow>("SELECT id,schedule_id,status,source,attempt,created_at,scheduled_for,started_at,finished_at,exit_code,stdout,stderr,stdout_truncated,stderr_truncated,missed_count,missed_from,missed_through,retry_of_id FROM occurrences WHERE schedule_id=? AND (? IS NULL OR (created_at,id)<(?,?)) ORDER BY created_at DESC,id DESC LIMIT ?").bind(&schedule_id).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.1.as_str())).bind(limit as i64+1).fetch_all(&state.pool).await.map_err(ApiError::db)?
+        sqlx::query_as::<_,OccurrenceRow>("SELECT o.id,o.schedule_id,s.name AS schedule_name,s.program AS schedule_program,o.status,o.source,o.attempt,o.created_at,o.scheduled_for,o.started_at,o.finished_at,o.exit_code,o.stdout,o.stderr,o.stdout_truncated,o.stderr_truncated,o.missed_count,o.missed_from,o.missed_through,o.retry_of_id FROM occurrences o LEFT JOIN schedules s ON s.id=o.schedule_id WHERE o.schedule_id=? AND (? IS NULL OR (o.created_at,o.id)<(?,?)) ORDER BY o.created_at DESC,o.id DESC LIMIT ?").bind(&schedule_id).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.0)).bind(cursor.as_ref().map(|c|c.1.as_str())).bind(limit as i64+1).fetch_all(&state.pool).await.map_err(ApiError::db)?
     };
     let has_more = rows.len() > limit as usize;
     let next_cursor = has_more.then(|| {
@@ -1367,6 +1391,8 @@ async fn schedule_exists(pool: &SqlitePool, id: &str) -> Result<bool, ApiError> 
 struct OccurrenceRow {
     id: String,
     schedule_id: String,
+    schedule_name: Option<String>,
+    schedule_program: Option<String>,
     status: String,
     source: String,
     attempt: i64,
@@ -1390,6 +1416,8 @@ impl FromRow<'_, sqlx::sqlite::SqliteRow> for OccurrenceRow {
         Ok(Self {
             id: row.try_get("id")?,
             schedule_id: row.try_get("schedule_id")?,
+            schedule_name: row.try_get("schedule_name")?,
+            schedule_program: row.try_get("schedule_program")?,
             status: row.try_get("status")?,
             source: row.try_get("source")?,
             attempt: row.try_get("attempt")?,
@@ -1411,7 +1439,7 @@ impl FromRow<'_, sqlx::sqlite::SqliteRow> for OccurrenceRow {
 }
 
 async fn fetch_occurrence(pool: &SqlitePool, id: &str) -> Result<Option<OccurrenceDto>, ApiError> {
-    let row=sqlx::query_as::<_,OccurrenceRow>("SELECT id,schedule_id,status,source,attempt,created_at,scheduled_for,started_at,finished_at,exit_code,stdout,stderr,stdout_truncated,stderr_truncated,missed_count,missed_from,missed_through,retry_of_id FROM occurrences WHERE id=?").bind(id).fetch_optional(pool).await.map_err(ApiError::db)?;
+    let row=sqlx::query_as::<_,OccurrenceRow>("SELECT o.id,o.schedule_id,s.name AS schedule_name,s.program AS schedule_program,o.status,o.source,o.attempt,o.created_at,o.scheduled_for,o.started_at,o.finished_at,o.exit_code,o.stdout,o.stderr,o.stdout_truncated,o.stderr_truncated,o.missed_count,o.missed_from,o.missed_through,o.retry_of_id FROM occurrences o LEFT JOIN schedules s ON s.id=o.schedule_id WHERE o.id=?").bind(id).fetch_optional(pool).await.map_err(ApiError::db)?;
     row.map(occurrence_dto).transpose()
 }
 
@@ -1427,6 +1455,8 @@ fn occurrence_dto(row: OccurrenceRow) -> Result<OccurrenceDto, ApiError> {
     Ok(OccurrenceDto {
         id: row.id,
         schedule_id: row.schedule_id,
+        schedule_name: row.schedule_name,
+        schedule_program: row.schedule_program,
         status: row.status,
         source: row.source,
         attempt: row.attempt,
@@ -1674,7 +1704,7 @@ mod tests {
             .oneshot(
                 Request::builder()
                     .uri("/schedules")
-                    .header(header::HOST, "127.0.0.1:4371")
+                    .header(header::HOST, "127.0.0.1:30002")
                     .header(header::ORIGIN, "https://example.com")
                     .body(Body::empty())
                     .unwrap(),

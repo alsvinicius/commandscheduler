@@ -16,10 +16,10 @@ pnpm install
 make up
 ```
 
-O daemon de desenvolvimento estará em `http://127.0.0.1:4372`. Confirme que respondeu:
+O daemon de desenvolvimento estará em `http://127.0.0.1:30002`. Confirme que respondeu:
 
 ```sh
-curl --fail http://127.0.0.1:4372/health
+curl --fail http://127.0.0.1:30002/health
 ```
 
 ## Criar o schedule
@@ -31,7 +31,7 @@ schedule_id=$(curl --fail --silent --show-error \
   -H 'Content-Type: application/json' \
   -H 'Idempotency-Key: diataxis-first-schedule' \
   -d '{"program":"/usr/bin/printf","args":["Olá, Command Scheduler\\n"],"timing":{"type":"once","at":"2099-01-01T00:00:00Z"},"missedPolicy":"skip"}' \
-  http://127.0.0.1:4372/api/v1/schedules | jq -r .id)
+  http://127.0.0.1:30002/api/v1/schedules | jq -r .id)
 printf 'Schedule: %s\n' "$schedule_id"
 ```
 
@@ -43,7 +43,7 @@ Peça uma execução manual:
 
 ```sh
 occurrence_id=$(curl --fail --silent --show-error \
-  -X POST http://127.0.0.1:4372/api/v1/schedules/"$schedule_id"/runs | jq -r .id)
+  -X POST http://127.0.0.1:30002/api/v1/schedules/"$schedule_id"/runs | jq -r .id)
 printf 'Execução: %s\n' "$occurrence_id"
 ```
 
@@ -51,7 +51,7 @@ Consulte o resultado até o estado deixar de ser `queued` ou `running`:
 
 ```sh
 curl --fail --silent --show-error \
-  http://127.0.0.1:4372/api/v1/occurrences/"$occurrence_id" | jq '{status, exitCode, stdout, stderr}'
+  http://127.0.0.1:30002/api/v1/occurrences/"$occurrence_id" | jq '{status, exitCode, stdout, stderr}'
 ```
 
 O resultado esperado inclui `"status": "succeeded"` e `stdout` com `Olá, Command Scheduler`. Você criou um schedule e iniciou uma ocorrência sem manter a interface aberta.

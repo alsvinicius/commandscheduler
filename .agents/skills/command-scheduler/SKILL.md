@@ -33,11 +33,12 @@ Criar um schedule faz o daemon executar um processo local com as permissões do 
 
 ## Conectar ao daemon local
 
-1. Verifique se o daemon já responde em loopback. O endereço padrão é `http://127.0.0.1:4371`; um ambiente `make up` usa `http://127.0.0.1:4372` e banco de desenvolvimento em `.tmp/dev/`.
-2. Se o endereço do daemon foi fornecido pelo usuário ou pela configuração do ambiente, use-o. Para a CLI, `--server URL` e `COMMAND_SCHEDULER_URL` selecionam a URL base.
-3. Se não houver daemon ativo, não assuma que o banco de desenvolvimento é o destino pretendido. Informe que o serviço local está indisponível. Para experimentos explicitamente de desenvolvimento, o guia Diátaxis documenta `make up` e `make down` no Linux.
-4. A API escuta em loopback. `Host` deve ser `localhost`, um endereço numérico de loopback ou um IP Tailscale IPv4 (`100.64.0.0/10`) quando a porta do projeto for encaminhada pelo proxy do Workspace. Clientes web exigem origem HTTP com a mesma autoridade, inclusive no proxy Vite local. Não falsifique `Origin` para contornar a proteção.
-5. Use o prefixo `/api/v1` nas rotas. Para o endereço padrão, a base é `http://127.0.0.1:4371/api/v1`. Consulte OpenAPI em `/openapi.yaml` ou a referência navegável em `/docs/api`.
+1. A instância local padrão usa a UI `http://127.0.0.1:30014` e o daemon/API `http://127.0.0.1:30002`. Verifique esses endereços antes de agir. Não use `4371`, `4372`, `5173` ou outro banco como fallback implícito.
+2. Para chamadas diretas, use `http://127.0.0.1:30002/api/v1`. Na CLI, passe sempre `--server http://127.0.0.1:30002`, mesmo que a versão instalada declare outro padrão; `--server URL` e `COMMAND_SCHEDULER_URL` selecionam a URL base.
+3. `make start` inicia a mesma combinação de portas (`30014` e `30002`) com o banco de desenvolvimento em `.tmp/dev/`. A CLI apontada para `30002` acessa o daemon que estiver ativo nessa porta. Não crie o schedule em outro daemon só porque ele também responde.
+4. Se `30002` não responder, informe que a instância pretendida está indisponível. Para experimentar no banco isolado, o guia Diátaxis documenta `make start` e `make stop` no Linux; não escolha outra instância sem o usuário indicar.
+5. A API escuta em loopback. `Host` deve ser `localhost`, um endereço numérico de loopback ou um IP Tailscale IPv4 (`100.64.0.0/10`) quando a porta do projeto for encaminhada pelo proxy do Workspace. Clientes web exigem origem HTTP com a mesma autoridade. A UI em `30014` encaminha chamadas para o daemon em `30002`; não falsifique `Origin` para contornar a proteção.
+6. Use o prefixo `/api/v1` nas rotas. A base padrão é `http://127.0.0.1:30002/api/v1`. Consulte OpenAPI em `http://127.0.0.1:30002/openapi.yaml` ou a referência navegável em `http://127.0.0.1:30002/docs/api`.
 
 ## Criar e administrar schedules
 
@@ -51,7 +52,7 @@ Na API, `POST /schedules` requer `program`, `args`, `timing` e `missedPolicy`. E
 Regras que afetam a configuração:
 
 - `program` é o executável; cada elemento de `args` é passado como argumento separado, na ordem dada. O daemon não executa comandos por shell implicitamente.
-- Na UI, o campo **Executável** recebe apenas o caminho/nome do programa; cada argumento fica em um item do array JSON **Argumentos**. Se um usuário colar uma linha completa (por exemplo, `python3 -c ...`) em Executável, explique como separá-la antes de testar ou salvar. A UI detecta padrões comuns, mas não interpreta toda sintaxe de shell.
+- Na UI, **Início** mostra o cockpit e a agenda móvel das próximas 24 horas; **Agendamentos** concentra a configuração dos schedules e **Execuções** mostra o histórico global. Na UI, o campo **Executável** recebe apenas o caminho/nome do programa; cada argumento fica em um item do array JSON **Argumentos**. Se um usuário colar uma linha completa (por exemplo, `python3 -c ...`) em Executável, explique como separá-la antes de testar ou salvar. A UI detecta padrões comuns, mas não interpreta toda sintaxe de shell.
 - A UI permite testar o comando antes de salvar via `POST /api/v1/commands/test`. Isso inicia o processo real, com efeitos locais possíveis; não cria schedule/ocorrência, limita a execução a 30 segundos e a saída a 1 MiB por stream. Só acione o teste quando o usuário pedir explicitamente para executar/verificar o comando; não teste por padrão ao criar schedules.
 - Horário único usa `{"type":"once","at":"<RFC3339>"}` e novas programações devem estar no futuro; replay idempotente continua válido após vencer o horário. Recorrência usa `{"type":"cron","expression":"<cinco campos>"}` no fuso local do daemon.
 - `missedPolicy` aceita `skip`, `consolidate` ou `sequence`; escolha conforme a intenção do usuário e explique consequências quando relevante. Horários únicos devem estar no futuro na criação. Alterar efetivamente `timing` reinicia o cursor de avaliação no instante da mudança. `sequence` processa ocorrências do mesmo schedule em ordem e uma por vez; cancelar o schedule impede retries automáticos.
@@ -65,7 +66,7 @@ Após criar ou alterar, confira a resposta e reporte o identificador e a configu
 - Para iniciar agora, use `POST /schedules/{scheduleId}/runs` ou a CLI `run ID`.
 - Guarde o identificador da ocorrência e consulte `GET /occurrences/{occurrenceId}` ou `run-show ID` até o estado ser terminal.
 - Para visão consolidada, consulte `GET /overview?from=...&to=...`; para agenda de instâncias futuras use `GET /agenda?from=...&to=...`. Ambos recebem limites RFC 3339; a agenda exige os dois limites.
-- Para histórico entre schedules, use `GET /occurrences` com filtros `status`, `scheduleId`, `from` e `to`, e continue pela `nextCursor` sem interpretá-la; cursores são baseados na chave de ordenação. A listagem omite saídas; busque um item por `GET /occurrences/{occurrenceId}` para consultar `stdout`/`stderr`. `GET /schedules` aceita filtro `status`.
+- Para histórico entre schedules, use `GET /occurrences` com filtros `status`, `scheduleId`, `from` e `to`, e continue pela `nextCursor` sem interpretá-la; cursores são baseados na chave de ordenação. A resposta inclui `scheduleName` e `scheduleProgram` quando o schedule responsável está disponível. A listagem omite saídas; busque um item por `GET /occurrences/{occurrenceId}` para consultar `stdout`/`stderr`. `GET /schedules` aceita filtro `status`.
 - Apresente `status`, código de saída, `stdout` e `stderr` relevantes. Saídas podem ser truncadas; respeite os indicadores do contrato.
 - Cancele uma ocorrência apenas quando solicitado; cancelamento é uma solicitação para a árvore de processos, inclusive durante a drenagem dos pipes, e não garantia de que ela já parou. O teste de comando tem prazo total de 30 segundos para processo e saída; preserva saída capturada e indica timeout/truncamento quando incompleta.
 - Retry cria outra ocorrência e preserva a anterior. Execução interrompida requer confirmação explícita conforme contrato.

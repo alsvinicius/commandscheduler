@@ -1,8 +1,8 @@
 # Command Scheduler
 
-Para iniciar o frontend Vite e o daemon Axum juntos pela Project Gallery, use `make start`/`make stop`. `COMMAND_SCHEDULER_API_PORT` e `COMMAND_SCHEDULER_WEB_PORT` recebem as portas atribuídas; o frontend encaminha `/api` e `/health` ao daemon.
+Para iniciar o frontend Vite e o daemon Axum juntos pela Project Gallery, use `make start`/`make stop`. A instância local padrão usa UI `http://127.0.0.1:30014` e daemon/API `http://127.0.0.1:30002`. `COMMAND_SCHEDULER_API_PORT` e `COMMAND_SCHEDULER_WEB_PORT` recebem as portas atribuídas; o frontend encaminha `/api` e `/health` ao daemon.
 
-Documentação: consulte [`docs/README.md`](docs/README.md). Com o daemon ativo, a referência navegável da API fica em `http://127.0.0.1:4371/docs/api` e o OpenAPI em `/openapi.yaml`.
+Documentação: consulte [`docs/README.md`](docs/README.md). Com o daemon ativo, a referência navegável da API fica em `http://127.0.0.1:30002/docs/api` e o OpenAPI em `/openapi.yaml`.
 
 Plataforma local para criar e gerenciar schedules e execuções pela CLI, web/API e permitir que aplicações locais criem e parametrizem execuções.
 
@@ -26,7 +26,7 @@ pnpm install
 make up
 ```
 
-A interface fica em `http://127.0.0.1:5173` e a API de desenvolvimento em `http://127.0.0.1:4372`, com banco isolado. `make down` encerra os processos iniciados e mantém os logs e o banco de desenvolvimento em `.tmp/dev/`.
+A interface fica em `http://127.0.0.1:30014` e a API de desenvolvimento em `http://127.0.0.1:30002`, com banco isolado. `make down` encerra os processos iniciados e mantém os logs e o banco de desenvolvimento em `.tmp/dev/`.
 
 Para iniciar cada processo em primeiro plano, use `make backend` ou `make frontend`. Também é possível iniciar manualmente, depois de compilar a UI ao menos uma vez:
 
@@ -35,7 +35,7 @@ pnpm ui:build
 cargo run --bin command-scheduler
 ```
 
-O daemon atende em `http://127.0.0.1:4371`; `/health` retorna `ok`. `COMMAND_SCHEDULER_ADDR` pode alterar o endereço/porta, desde que seja loopback, e `COMMAND_SCHEDULER_WEB_DIR` aponta para outro diretório de assets. O servidor Vite encaminha `/api` e `/health` para o daemon local.
+O daemon atende em `http://127.0.0.1:30002`; `/health` retorna `ok`. `COMMAND_SCHEDULER_ADDR` pode alterar o endereço/porta, desde que seja loopback, e `COMMAND_SCHEDULER_WEB_DIR` aponta para outro diretório de assets. O servidor Vite encaminha `/api` e `/health` para o daemon local.
 
 O banco SQLite fica no diretório local de dados do usuário (`ProjectDirs` do sistema operacional). `COMMAND_SCHEDULER_DB_PATH` permite escolher um arquivo específico, por exemplo durante desenvolvimento ou validação. Migrações são aplicadas ao iniciar o daemon; histórico finalizado é expurgado após 90 dias.
 
@@ -57,7 +57,7 @@ cargo run --bin command-scheduler-cli -- pause <schedule-id>
 cargo run --bin command-scheduler-cli -- run <schedule-id>
 ```
 
-Use `--at RFC3339` em vez de `--cron` para schedule único. `--server` ou `COMMAND_SCHEDULER_URL` altera a URL base local; o padrão é `http://127.0.0.1:4371`. Veja o [guia da CLI](docs/engineering/guides/cli.md) ou `--help` para opções de parâmetros, retries e política de horários vencidos.
+Use `--at RFC3339` em vez de `--cron` para schedule único. `--server` ou `COMMAND_SCHEDULER_URL` altera a URL base local; o padrão é `http://127.0.0.1:30002`. Veja o [guia da CLI](docs/engineering/guides/cli.md) ou `--help` para opções de parâmetros, retries e política de horários vencidos.
 
 ## Documentação
 

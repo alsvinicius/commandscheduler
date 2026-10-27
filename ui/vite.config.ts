@@ -1,7 +1,7 @@
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 
-const apiTarget = process.env.COMMAND_SCHEDULER_API_URL ?? 'http://127.0.0.1:4371'
+const apiTarget = process.env.COMMAND_SCHEDULER_API_URL ?? 'http://127.0.0.1:30002'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -17,6 +17,8 @@ export default defineConfig({
   },
   server: {
     host: '127.0.0.1',
+    port: Number(process.env.COMMAND_SCHEDULER_WEB_PORT ?? 30014),
+    strictPort: true,
     proxy: {
       '/api': {
         target: apiTarget,

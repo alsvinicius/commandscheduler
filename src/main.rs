@@ -15,7 +15,7 @@ pub mod storage;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let address: SocketAddr = std::env::var("COMMAND_SCHEDULER_ADDR")
-        .unwrap_or_else(|_| "127.0.0.1:4371".to_owned())
+        .unwrap_or_else(|_| "127.0.0.1:30002".to_owned())
         .parse()
         .context("COMMAND_SCHEDULER_ADDR must be a socket address")?;
     anyhow::ensure!(

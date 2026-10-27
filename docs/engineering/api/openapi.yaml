@@ -12,7 +12,7 @@ info:
     arbitrários retornam 403, mesmo quando resolvem para loopback.
 security: []
 servers:
-  - url: http://127.0.0.1:4371/api/v1
+  - url: http://127.0.0.1:30002/api/v1
     description: Endereço local padrão; a porta pode ser configurada.
 tags:
   - name: Schedules
@@ -44,7 +44,7 @@ paths:
       tags: [Operations]
       operationId: getAgenda
       summary: Consultar agenda de schedules e execuções
-      description: Retorna os próximos 500 horários de schedules ativos selecionados globalmente e até 500 execuções finalizadas mais recentes no intervalo, até 1000 itens no total em ordem cronológica. Limites from e to são obrigatórios e semiabertos; horários cron são calculados no fuso local do daemon.
+      description: Retorna até 500 itens combinados de horários previstos de schedules ativos e ocorrências queued/running, mais até 500 execuções finalizadas no intervalo (até 1000 itens). Uma previsão é substituída pela ocorrência queued correspondente; itens são ordenados cronologicamente. Limites from e to são obrigatórios e semiabertos; horários cron são calculados no fuso local do daemon.
       parameters:
         - name: from
           in: query
@@ -654,6 +654,8 @@ components:
       properties:
         id: {type: string, format: uuid}
         scheduleId: {type: string, format: uuid}
+        scheduleName: {type: [string, 'null']}
+        scheduleProgram: {type: [string, 'null']}
         status: {$ref: '#/components/schemas/OccurrenceStatus'}
         source: {type: string, enum: [schedule, parameter_update, manual, retry, recovery]}
         attempt: {type: integer, minimum: 1}

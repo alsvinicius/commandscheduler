@@ -1,6 +1,6 @@
 # Como administrar schedules e execuções
 
-Use a interface web ou a CLI para alterar um schedule existente, acompanhar ocorrências, cancelar uma execução ou solicitar retry. A [referência da CLI](../reference/cli.md) lista os subcomandos; o [OpenAPI](../../engineering/api/openapi.yaml) define os códigos HTTP e os corpos completos.
+Use a página **Agendamentos** da interface web ou a CLI para alterar um schedule existente. A página **Execuções** reúne o histórico de todos os schedules, exibe o nome do schedule responsável e permite cancelar uma execução ativa ou solicitar retry. A página inicial apresenta horários previstos e ocorrências enfileiradas ou em andamento nas próximas 24 horas. A [referência da CLI](../reference/cli.md) lista os subcomandos; o [OpenAPI](../../engineering/api/openapi.yaml) define os códigos HTTP e os corpos completos.
 
 ## Alterar a configuração
 

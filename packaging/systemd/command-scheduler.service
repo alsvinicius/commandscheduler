@@ -7,7 +7,7 @@ Type=simple
 ExecStart=%h/.local/bin/command-scheduler
 Restart=on-failure
 RestartSec=5s
-Environment=COMMAND_SCHEDULER_ADDR=127.0.0.1:4371
+Environment=COMMAND_SCHEDULER_ADDR=127.0.0.1:30002
 Environment=COMMAND_SCHEDULER_WEB_DIR=%h/.local/share/command-scheduler/ui
 WorkingDirectory=%h
 NoNewPrivileges=true

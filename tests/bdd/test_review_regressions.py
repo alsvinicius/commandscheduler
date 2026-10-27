@@ -62,7 +62,7 @@ class ReviewRegressions(unittest.TestCase):
             status, _ = self.request("POST", "/commands/test", body, headers)
             self.assertEqual(status, 403)
             self.assertFalse(marker.exists())
-        for host in (f"127.0.0.1:{self.port}", "localhost:5173", "127.0.0.1:5173", "[::1]:5173"):
+        for host in (f"127.0.0.1:{self.port}", "localhost:30014", "127.0.0.1:30014", "[::1]:30014"):
             status, result = self.request("POST", "/commands/test",
                                           {"program": sys.executable, "args": ["-c", "print('local')"]},
                                           {"Host": host, "Origin": f"http://{host}"})

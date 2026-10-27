@@ -1,0 +1,895 @@
+{
+  "schemaVersion": 4,
+  "generatedAt": "2026-10-20T03:06:54.865703+00:00",
+  "application": "scheduler",
+  "scope": "Landing route plus the listed secondary states; Chalk, Graphite and Workshop at 1440, 390 and 320 CSS px.",
+  "method": "Headless Google Chrome via Puppeteer. Computed-style screening of visible text, target geometry, page overflow, browser errors and reduced-motion declarations. Text metrics were measured before screenshot sanitization. Persistent WebP captures replace private labels; Steam artwork is blurred.",
+  "dataSource": "Mocked health/API GET responses with empty schedule and overview fixtures.",
+  "mutations": "Non-GET/HEAD application requests blocked. Theme selection may update browser-local storage; no product records changed.",
+  "limitations": [
+    "Other routes and workflows outside the enumerated checks were not audited.",
+    "Contrast screening estimates gradient endpoint/background composites; it does not certify every pixel, opacity, graphical boundary or assistive technology behavior.",
+    "Basic target screening excludes links inside paragraphs; only visible text-bearing elements were screened.",
+    "A Tab key and computed focus style were checked, but full keyboard flows, dialog focus return and screen-reader behavior are not certified.",
+    "Reduced motion was checked from computed declarations; animation behavior over time was not recorded. Theme persistence across browser restarts was not tested."
+  ],
+  "visualChecks": [
+    {
+      "theme": "chalk",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-chalk-1440.webp"
+    },
+    {
+      "theme": "chalk",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 48,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-chalk-390.webp"
+    },
+    {
+      "theme": "chalk",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 48,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-chalk-320.webp"
+    },
+    {
+      "theme": "graphite",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-graphite-1440.webp"
+    },
+    {
+      "theme": "graphite",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 48,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-graphite-390.webp"
+    },
+    {
+      "theme": "graphite",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 48,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-graphite-320.webp"
+    },
+    {
+      "theme": "workshop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-workshop-1440.webp"
+    },
+    {
+      "theme": "workshop",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 48,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-workshop-390.webp"
+    },
+    {
+      "theme": "workshop",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "horizontalOverflow": false,
+      "visibleTextElements": 48,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "screenshot": "instrument-review/scheduler-workshop-320.webp"
+    }
+  ],
+  "searchChecks": [],
+  "secondaryRouteMethod": "Headless Chrome via Puppeteer; synthetic GitHub and scheduler GET fixtures, non-GET/HEAD requests blocked; metrics measured before screenshot anonymization.",
+  "secondaryRouteChecks": [
+    {
+      "theme": "chalk",
+      "state": "create-form",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-chalk-create-form-1440.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 87,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "TEXTAREA",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "TEXTAREA"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "chalk",
+      "state": "create-form",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-chalk-create-form-390.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 86,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "INPUT",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "INPUT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "chalk",
+      "state": "create-form",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-chalk-create-form-320.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 86,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "INPUT",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "INPUT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "graphite",
+      "state": "create-form",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-graphite-create-form-1440.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 87,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "TEXTAREA",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "TEXTAREA"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "graphite",
+      "state": "create-form",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-graphite-create-form-390.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 86,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "INPUT",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "INPUT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "graphite",
+      "state": "create-form",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-graphite-create-form-320.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 86,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "INPUT",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "INPUT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "workshop",
+      "state": "create-form",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-workshop-create-form-1440.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 87,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "TEXTAREA",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "TEXTAREA"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "workshop",
+      "state": "create-form",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-workshop-create-form-390.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 86,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "INPUT",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "INPUT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "workshop",
+      "state": "create-form",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-workshop-create-form-320.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 86,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "INPUT",
+        "role": null,
+        "label": "",
+        "focusVisible": true,
+        "activeElement": "INPUT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": {
+        "available": true,
+        "hasInvalidRequiredField": true,
+        "submitted": false
+      },
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "chalk",
+      "state": "api-failure",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-chalk-api-failure-1440.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 50,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "A",
+        "role": null,
+        "label": "Command Scheduler, início",
+        "focusVisible": true,
+        "activeElement": "A"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "chalk",
+      "state": "api-failure",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-chalk-api-failure-390.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "SELECT",
+        "role": null,
+        "label": "Chalk\nGraphite\nWorkshop",
+        "focusVisible": true,
+        "activeElement": "SELECT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "chalk",
+      "state": "api-failure",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-chalk-api-failure-320.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "A",
+        "role": null,
+        "label": "Schedules",
+        "focusVisible": true,
+        "activeElement": "A"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "graphite",
+      "state": "api-failure",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-graphite-api-failure-1440.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 50,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "A",
+        "role": null,
+        "label": "Command Scheduler, início",
+        "focusVisible": true,
+        "activeElement": "A"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "graphite",
+      "state": "api-failure",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-graphite-api-failure-390.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "SELECT",
+        "role": null,
+        "label": "Chalk\nGraphite\nWorkshop",
+        "focusVisible": true,
+        "activeElement": "SELECT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "graphite",
+      "state": "api-failure",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-graphite-api-failure-320.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "A",
+        "role": null,
+        "label": "Schedules",
+        "focusVisible": true,
+        "activeElement": "A"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "workshop",
+      "state": "api-failure",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-workshop-api-failure-1440.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 50,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "A",
+        "role": null,
+        "label": "Command Scheduler, início",
+        "focusVisible": true,
+        "activeElement": "A"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "workshop",
+      "state": "api-failure",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-workshop-api-failure-390.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "SELECT",
+        "role": null,
+        "label": "Chalk\nGraphite\nWorkshop",
+        "focusVisible": true,
+        "activeElement": "SELECT"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    },
+    {
+      "theme": "workshop",
+      "state": "api-failure",
+      "viewport": {
+        "width": 320,
+        "height": 1000
+      },
+      "screenshot": "instrument-review/scheduler-workshop-api-failure-320.webp",
+      "stateVerified": true,
+      "horizontalOverflow": false,
+      "visibleTextElements": 49,
+      "textBelow12pxCount": 0,
+      "targetBelow24pxCount": 0,
+      "estimatedTextContrastFailureCount": 0,
+      "pageJavaScriptErrorCount": 0,
+      "keyboard": {
+        "tag": "A",
+        "role": null,
+        "label": "Schedules",
+        "focusVisible": true,
+        "activeElement": "A"
+      },
+      "themeReload": {
+        "supported": true,
+        "persisted": true
+      },
+      "invalidEnter": null,
+      "reducedMotion": {
+        "preference": true,
+        "animatedElements": 0,
+        "transitioningElements": 0,
+        "scrollBehavior": "auto"
+      },
+      "mutationRequestsBlocked": true
+    }
+  ],
+  "themeReloadChecks": [
+    {
+      "theme": "chalk",
+      "state": "create-form",
+      "supported": true,
+      "persisted": true,
+      "result": null
+    },
+    {
+      "theme": "graphite",
+      "state": "create-form",
+      "supported": true,
+      "persisted": true,
+      "result": null
+    },
+    {
+      "theme": "workshop",
+      "state": "create-form",
+      "supported": true,
+      "persisted": true,
+      "result": null
+    },
+    {
+      "theme": "chalk",
+      "state": "api-failure",
+      "supported": true,
+      "persisted": true,
+      "result": null
+    },
+    {
+      "theme": "graphite",
+      "state": "api-failure",
+      "supported": true,
+      "persisted": true,
+      "result": null
+    },
+    {
+      "theme": "workshop",
+      "state": "api-failure",
+      "supported": true,
+      "persisted": true,
+      "result": null
+    }
+  ],
+  "invalidEnterChecks": [
+    {
+      "available": true,
+      "hasInvalidRequiredField": true,
+      "submitted": false
+    },
+    {
+      "available": true,
+      "hasInvalidRequiredField": true,
+      "submitted": false
+    },
+    {
+      "available": true,
+      "hasInvalidRequiredField": true,
+      "submitted": false
+    }
+  ],
+  "evidenceCaptures": {
+    "primary": {
+      "captureId": "635ce229-8605-4461-80e4-ce540b63e58f",
+      "capturedAt": "2026-10-20T03:04:56.069Z",
+      "sourceFingerprints": {
+        "ui/src/App.vue": "8e1bc4d1f4c445a43daf1117b79bd6e5a42f5930ae7d8e4e636e730f8a568923",
+        "ui/src/style.css": "35224b14c1c20b7ef15cd62f65330be0b6be2945fee6c555359ffc2b662db109"
+      }
+    },
+    "secondary": {
+      "captureId": "4ef88642-46ab-4fca-bf4e-615861ee36fa",
+      "capturedAt": "2026-10-20T03:04:56.246Z",
+      "sourceFingerprints": {
+        "ui/src/App.vue": "8e1bc4d1f4c445a43daf1117b79bd6e5a42f5930ae7d8e4e636e730f8a568923",
+        "ui/src/style.css": "35224b14c1c20b7ef15cd62f65330be0b6be2945fee6c555359ffc2b662db109"
+      }
+    },
+    "consolidatedAt": "2026-10-20T03:06:54.865729+00:00",
+    "provenance": "both captures verified against project sources before staging"
+  }
+}

@@ -8,7 +8,7 @@ pnpm ui:build
 cargo build --locked --release --bins
 ```
 
-Os binários ficam em `target/release/` (`.exe` no Windows) e os assets em `ui/dist/`. O daemon atende apenas loopback em `127.0.0.1:4371`; a UI fica em `/`, a saúde em `/health` e a referência da API em `/docs/api` (OpenAPI em `/openapi.yaml`). A API e a escolha de outro arquivo SQLite são descritas no [guia da CLI](cli.md) e no [README](../../../README.md). O workflow CI compila/testa nos três sistemas; a instalação e o comportamento do supervisor precisam de reprodução nativa antes do release.
+Os binários ficam em `target/release/` (`.exe` no Windows) e os assets em `ui/dist/`. O daemon atende apenas loopback em `127.0.0.1:30002`; a UI fica em `/`, a saúde em `/health` e a referência da API em `/docs/api` (OpenAPI em `/openapi.yaml`). A API e a escolha de outro arquivo SQLite são descritas no [guia da CLI](cli.md) e no [README](../../../README.md). O workflow CI compila/testa nos três sistemas; a instalação e o comportamento do supervisor precisam de reprodução nativa antes do release.
 
 ## macOS — LaunchAgent do usuário
 
@@ -23,7 +23,7 @@ python3 -c 'from pathlib import Path; import os; p=Path("packaging/launchd/com.c
 launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/com.command-scheduler.daemon.plist"
 ```
 
-Se `~/.local/bin` não estiver no `PATH`, acrescente `export PATH="$HOME/.local/bin:$PATH"` ao arquivo de inicialização do shell. O LaunchAgent inicia na sessão do usuário, mantém o daemon ativo após fechar o navegador e reinicia falhas. Consulte com `launchctl print "gui/$(id -u)/com.command-scheduler.daemon"` e `curl http://127.0.0.1:4371/health`. Para atualizar, substitua binário/assets e faça `launchctl bootout` seguido de `bootstrap`. Para parar/remover, use `bootout`, remova o plist e, se desejar, apague `~/.local/lib/command-scheduler` e `~/.local/bin/command-scheduler-cli`. O banco SQLite no diretório local de dados do usuário permanece separado e só deve ser removido se seus dados puderem ser descartados. Logs ficam em `~/Library/Logs/command-scheduler.log`.
+Se `~/.local/bin` não estiver no `PATH`, acrescente `export PATH="$HOME/.local/bin:$PATH"` ao arquivo de inicialização do shell. O LaunchAgent inicia na sessão do usuário, mantém o daemon ativo após fechar o navegador e reinicia falhas. Consulte com `launchctl print "gui/$(id -u)/com.command-scheduler.daemon"` e `curl http://127.0.0.1:30002/health`. Para atualizar, substitua binário/assets e faça `launchctl bootout` seguido de `bootstrap`. Para parar/remover, use `bootout`, remova o plist e, se desejar, apague `~/.local/lib/command-scheduler` e `~/.local/bin/command-scheduler-cli`. O banco SQLite no diretório local de dados do usuário permanece separado e só deve ser removido se seus dados puderem ser descartados. Logs ficam em `~/Library/Logs/command-scheduler.log`.
 
 ## Windows — Tarefa agendada do usuário
 
