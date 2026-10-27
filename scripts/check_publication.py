@@ -10,16 +10,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
-    manifest = tomllib.loads((ROOT / "Cargo.toml").read_text())
+    manifest = tomllib.loads((ROOT / "Cargo.toml").read_text(encoding="utf-8"))
     assert manifest["package"]["license"] == "MIT", "Cargo license must match LICENSE"
     for file in ("package.json", "ui/package.json"):
-        assert json.loads((ROOT / file).read_text())["license"] == "MIT", file
+        assert json.loads((ROOT / file).read_text(encoding="utf-8"))["license"] == "MIT", file
     for file in ("LICENSE", "SECURITY.md", "THIRD_PARTY_NOTICES.md",
                  "ui/public/third-party-notices.txt"):
         assert (ROOT / file).is_file(), f"Missing publication file: {file}"
     package_files = subprocess.check_output(
         ["cargo", "package", "--locked", "--list"], cwd=ROOT, text=True
     ).splitlines()
+    package_files = [file.replace("\\", "/") for file in package_files]
     allowed = {"Cargo.toml", "Cargo.toml.orig", "Cargo.lock", "LICENSE", "README.md",
                "SECURITY.md", "THIRD_PARTY_NOTICES.md", "ui/public/third-party-notices.txt",
                "docs/engineering/api/openapi.yaml", ".cargo_vcs_info.json"}
@@ -28,10 +29,10 @@ def main():
             f"Unexpected Cargo publication file: {file}")
     assert "src/database.rs" in package_files
     embedded = set(re.findall(r'include_str!\("\.\./migrations/([^\"]+)"\)',
-                              (ROOT / "src/storage.rs").read_text()))
+                              (ROOT / "src/storage.rs").read_text(encoding="utf-8")))
     migrations = {p.name for p in (ROOT / "migrations").glob("*.sql")}
     assert embedded == migrations, "Every migration must be embedded exactly once"
-    lock = tomllib.loads((ROOT / "Cargo.lock").read_text())
+    lock = tomllib.loads((ROOT / "Cargo.lock").read_text(encoding="utf-8"))
     names = {p["name"] for p in lock["package"]}
     assert not names & {"rsa", "sqlx-mysql", "sqlx-postgres"}, (
         "Unused server database dependencies have returned")
@@ -41,7 +42,7 @@ def main():
     files += list((ROOT / "docs").rglob("*.md"))
     files += list((ROOT / ".agents").rglob("*.md"))
     for file in files:
-        for target in re.findall(r'\]\(([^)\n]+)\)', file.read_text()):
+        for target in re.findall(r'\]\(([^)\n]+)\)', file.read_text(encoding="utf-8")):
             target = target.strip().split(" ")[0].strip("<>")
             if target.startswith(("https:", "http:", "mailto:", "#", "plugin:")):
                 continue
