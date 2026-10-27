@@ -16,7 +16,7 @@ Veja a [política de segurança](SECURITY.md), os [avisos de terceiros](THIRD_PA
 ## Requisitos locais
 
 - Rust stable via rustup, com `rustfmt` e `clippy` (o `rust-toolchain.toml` seleciona esses componentes).
-- Node.js compatível com Vite 8 (20.19+ ou 22.12+; Node 24 também funciona) e pnpm 11.11.0.
+- Node.js compatível com Vite 8 e pnpm 11.11.0 (20.19+ ou 22.13+; Node 24 também funciona).
 - Compilador C e ferramentas de build exigidas pelo SQLx/SQLite nos sistemas-alvo.
 
 ## Desenvolvimento
