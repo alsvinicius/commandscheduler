@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[2]
-journeys = "\n".join(path.read_text() for path in (root / "docs/product/journeys").glob("*.md"))
+journeys = "\n".join(path.read_text(encoding="utf-8") for path in (root / "docs/product/journeys").glob("*.md"))
 documented = set(re.findall(r"BDD-JRN-\d{3}-\d{2}", journeys))
 test_files = [
     *(root / "tests/bdd").glob("test_*.py"),
@@ -18,7 +18,7 @@ test_files = [
 linked_lines = []
 for path in test_files:
     linked_lines.extend(
-        line for line in path.read_text().splitlines()
+        line for line in path.read_text(encoding="utf-8").splitlines()
         if re.match(r"\s*(?:#|//)\s*Covers:.*", line)
     )
 covered = set(re.findall(r"BDD-JRN-\d{3}-\d{2}", "\n".join(linked_lines)))
